@@ -120,6 +120,20 @@ const Square = ({ scrollX }) => {
 };
 
 export default function OnboardingScreen({ navigation }) {
+  // React.useEffect(() => {
+  //   // checkIfLoggedIn();
+  // });
+
+  // function checkIfLoggedIn() {
+  //   firebase.auth().onAuthStateChanged((authUser) => {
+  //     if (authUser.user.emailVerified) {
+  //       console.log("email is verified");
+  //     } else {
+  //       console.log("email not verified");
+  //     }
+  //   });
+  // }
+
   React.useEffect(() => {
     checkIfLoggedIn();
   });

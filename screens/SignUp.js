@@ -20,16 +20,7 @@ import db from "../firebase/config";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { StatusBar } from "react-native";
 
-import * as Notifications from "expo-notifications";
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
+import { Icon } from "react-native-elements/dist/icons/Icon";
 const SignUp = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [areas, setAreas] = React.useState([]);
@@ -39,34 +30,6 @@ const SignUp = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
   const [user_contact, setUser_contact] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
-  // notification
-  const [expoPushToken, setExpoPushToken] = React.useState("");
-  const [notification, setNotification] = React.useState(false);
-  const notificationListener = React.useRef();
-  const responseListener = React.useRef();
-
-  React.useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
 
   React.useEffect(() => {
     fetch("https://restcountries.eu/rest/v2/all")
@@ -92,63 +55,26 @@ const SignUp = ({ navigation }) => {
         }
       });
   }, []);
-  // for function
 
-  async function schedulePushNotification() {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Account Created Successfully 🙂",
-        body: `Thank You ${user_name}`,
-      },
-      trigger: { seconds: 2 },
-    });
-  }
-
-  async function registerForPushNotificationsAsync() {
-    let token;
-    if (Constants.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
-    } else {
-      alert("Must use physical device for Push Notifications");
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    return token;
-  }
-
-  const signUp = (emailId, password) => {
+  const signUpMethod = (emailId, password) => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(emailId, password)
       .then(() => {
+        firebase
+          .auth()
+          .currentUser.sendEmailVerification()
+          .then(() => {
+            return Alert.alert("Check Email And Verify It To Login");
+          });
         db.collection("users").add({
           user_name: user_name,
           email_id: user_email,
           contact: user_contact,
           selected_area: selectedArea,
         });
-        navigation.navigate("Home");
-        return Alert.alert("User Added Successfully");
+
+        navigation.replace("Login");
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -166,7 +92,7 @@ const SignUp = ({ navigation }) => {
           marginTop: SIZES.padding * 6,
           paddingHorizontal: SIZES.padding * 2,
         }}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.replace("Login")}
       >
         <Image
           source={icons.back}
@@ -248,6 +174,9 @@ const SignUp = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Full Name
           </Text>
+          <View style={{ position: "absolute", top: 40, left: 5 }}>
+            <Icon type="feather" name="user" size={28} color={COLORS.white} />
+          </View>
           <TextInput
             value={user_name}
             onChangeText={(user_name) => setUser_name(user_name)}
@@ -258,6 +187,7 @@ const SignUp = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Full Name"
             placeholderTextColor={COLORS.white}
@@ -269,6 +199,9 @@ const SignUp = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Email
           </Text>
+          <View style={{ position: "absolute", top: 40, left: 5 }}>
+            <Icon type="feather" name="mail" size={28} color={COLORS.white} />
+          </View>
           <TextInput
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
@@ -280,6 +213,7 @@ const SignUp = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Email ID"
             placeholderTextColor={COLORS.white}
@@ -336,6 +270,14 @@ const SignUp = ({ navigation }) => {
             </TouchableOpacity>
 
             {/* Phone Number */}
+            <View style={{ position: "absolute", top: 10, left: 120 }}>
+              <Icon
+                type="feather"
+                name="phone"
+                size={28}
+                color={COLORS.white}
+              />
+            </View>
             <TextInput
               value={user_contact}
               onChangeText={(user_contact) => setUser_contact(user_contact)}
@@ -348,8 +290,9 @@ const SignUp = ({ navigation }) => {
                 height: 40,
                 color: COLORS.white,
                 ...FONTS.body3,
+                paddingLeft: 50,
               }}
-              placeholder="Enter Phone Number"
+              placeholder="Phone Number"
               placeholderTextColor={COLORS.white}
               selectionColor={COLORS.white}
             />
@@ -361,6 +304,20 @@ const SignUp = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Password
           </Text>
+          {showPassword ? (
+            <View style={{ position: "absolute", top: 37, left: 5 }}>
+              <Icon
+                type="feather"
+                name="unlock"
+                size={28}
+                color={COLORS.white}
+              />
+            </View>
+          ) : (
+            <View style={{ position: "absolute", top: 37, left: 5 }}>
+              <Icon type="feather" name="lock" size={28} color={COLORS.white} />
+            </View>
+          )}
           <TextInput
             value={user_password}
             onChangeText={(user_password) => setUser_password(user_password)}
@@ -371,6 +328,7 @@ const SignUp = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Password"
             placeholderTextColor={COLORS.white}
@@ -413,18 +371,7 @@ const SignUp = ({ navigation }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            signUp(user_email, user_password);
-            setUser_name("");
-            setUser_email("");
-            setUser_contact("");
-            setUser_password("");
-            firebase.auth().onAuthStateChanged(async function (user) {
-              if (user) {
-                await schedulePushNotification();
-              } else {
-                return null;
-              }
-            });
+            signUpMethod(user_email, user_password);
           }}
         >
           <Text style={{ color: COLORS.white, ...FONTS.h3 }}>

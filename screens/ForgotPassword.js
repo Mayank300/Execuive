@@ -15,99 +15,21 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import firebase from "firebase";
 import db from "../firebase/config";
-
-import * as Notifications from "expo-notifications";
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+import { Icon } from "react-native-elements";
+import { windowWidth } from "../constants/Dimensions";
 
 const ForgotPassword = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
-  // notification
-  const [expoPushToken, setExpoPushToken] = React.useState("");
-  const [notification, setNotification] = React.useState(false);
-  const notificationListener = React.useRef();
-  const responseListener = React.useRef();
 
-  React.useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
-  async function schedulePushNotification() {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Email Sent Successfully 🙂",
-        body: "Check your register email and change password!",
-      },
-      trigger: { seconds: 2 },
-    });
-  }
-
-  async function registerForPushNotificationsAsync() {
-    let token;
-    if (Constants.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
-    } else {
-      alert("Must use physical device for Push Notifications");
-    }
-
-    if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    return token;
-  }
-
-  function sendPasswordReset() {
+  const sendPasswordReset = () => {
     if (user_email !== "") {
       firebase
         .auth()
         .sendPasswordResetEmail(user_email)
         .then(() => {
-          schedulePushNotification();
           setUser_email("");
-          navigation.navigate("Login");
+          navigation.replace("Login");
+          return alert("Check registered email and change passowrd ");
         })
         .catch((error) => {
           var errorCode = error.code;
@@ -117,7 +39,7 @@ const ForgotPassword = ({ navigation }) => {
     } else {
       return alert("Invalid Email ID");
     }
-  }
+  };
 
   function renderHeader() {
     return (
@@ -128,7 +50,7 @@ const ForgotPassword = ({ navigation }) => {
           marginTop: SIZES.padding * 6,
           paddingHorizontal: SIZES.padding * 2,
         }}
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.replace("Login")}
       >
         <Image
           source={icons.back}
@@ -209,6 +131,9 @@ const ForgotPassword = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Email
           </Text>
+          <View style={{ position: "absolute", top: 40, left: 5 }}>
+            <Icon type="feather" name="mail" size={28} color={COLORS.white} />
+          </View>
           <TextInput
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
@@ -220,6 +145,7 @@ const ForgotPassword = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Email ID"
             placeholderTextColor={COLORS.white}

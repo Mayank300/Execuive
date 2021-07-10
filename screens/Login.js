@@ -17,58 +17,34 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import firebase from "firebase";
 import db from "../firebase/config";
-
+import { Icon } from "react-native-elements";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { windowHeight } from "../constants/Dimensions";
 
 const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
-  const [areas, setAreas] = React.useState([]);
-  const [selectedArea, setSelectedArea] = React.useState(null);
-  const [modalVisible, setModalVisible] = React.useState(false);
   const [user_email, setUser_email] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
+  var userDetails = firebase.auth().currentUser;
 
-  React.useEffect(() => {
-    fetch("https://restcountries.eu/rest/v2/all")
-      .then((response) => response.json())
-      .then((data) => {
-        let areaData = data.map((item) => {
-          return {
-            code: item.alpha2Code,
-            name: item.name,
-            callingCode: `+${item.callingCodes[0]}`,
-            flag: `https://www.countryflags.io/${item.alpha2Code}/flat/64.png`,
-          };
-        });
-
-        setAreas(areaData);
-
-        if (areaData.length > 0) {
-          let defaultData = areaData.filter((a) => a.code == "IN");
-
-          if (defaultData.length > 0) {
-            setSelectedArea(defaultData[0]);
-          }
-        }
-      });
-  }, []);
-  // for function
   const login = (emailId, password) => {
+    // if (!userDetails.emailVerified) {
+    // Alert.alert("Check & Verify Email Before Login");
+    // } else {
     firebase
       .auth()
       .signInWithEmailAndPassword(emailId, password)
       .then(() => {
         navigation.replace("Home");
+        alert("Logged in successfully !");
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
         return Alert.alert(errorMessage);
       });
+    // }
   };
-
-  //
 
   function renderLogo() {
     return (
@@ -134,6 +110,9 @@ const Login = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Email
           </Text>
+          <View style={{ position: "absolute", top: 40, left: 5 }}>
+            <Icon type="feather" name="mail" size={28} color={COLORS.white} />
+          </View>
           <TextInput
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
@@ -145,6 +124,7 @@ const Login = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Email ID"
             placeholderTextColor={COLORS.white}
@@ -157,6 +137,20 @@ const Login = ({ navigation }) => {
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Password
           </Text>
+          {showPassword ? (
+            <View style={{ position: "absolute", top: 37, left: 5 }}>
+              <Icon
+                type="feather"
+                name="unlock"
+                size={28}
+                color={COLORS.white}
+              />
+            </View>
+          ) : (
+            <View style={{ position: "absolute", top: 37, left: 5 }}>
+              <Icon type="feather" name="lock" size={28} color={COLORS.white} />
+            </View>
+          )}
           <TextInput
             value={user_password}
             onChangeText={(user_password) => setUser_password(user_password)}
@@ -167,6 +161,7 @@ const Login = ({ navigation }) => {
               height: 40,
               color: COLORS.white,
               ...FONTS.body3,
+              paddingLeft: 50,
             }}
             placeholder="Enter Password"
             placeholderTextColor={COLORS.white}
@@ -218,7 +213,7 @@ const Login = ({ navigation }) => {
           style={{
             marginTop: 30,
           }}
-          onPress={() => navigation.navigate("ForgotPassword")}
+          onPress={() => navigation.replace("ForgotPassword")}
         >
           <Text
             style={{ color: COLORS.white, ...FONTS.h5, textAlign: "center" }}
@@ -230,7 +225,7 @@ const Login = ({ navigation }) => {
           style={{
             marginTop: 30,
           }}
-          onPress={() => navigation.navigate("SignUp")}
+          onPress={() => navigation.replace("SignUp")}
         >
           <Text
             style={{ color: COLORS.white, ...FONTS.h5, textAlign: "center" }}
@@ -239,60 +234,6 @@ const Login = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
-    );
-  }
-
-  function renderAreaCodesModal() {
-    const renderItem = ({ item }) => {
-      return (
-        <TouchableOpacity
-          style={{ padding: SIZES.padding, flexDirection: "row" }}
-          onPress={() => {
-            setSelectedArea(item);
-            setModalVisible(false);
-          }}
-        >
-          <Image
-            source={{ uri: item.flag }}
-            style={{
-              width: 30,
-              height: 30,
-              marginRight: 10,
-            }}
-          />
-          <Text style={{ ...FONTS.body4 }}>{item.name}</Text>
-        </TouchableOpacity>
-      );
-    };
-
-    return (
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <View
-              style={{
-                height: 400,
-                width: SIZES.width * 0.8,
-                backgroundColor: COLORS.lightGreen,
-                borderRadius: SIZES.radius,
-              }}
-            >
-              <FlatList
-                data={areas}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.code}
-                showsVerticalScrollIndicator={false}
-                style={{
-                  padding: SIZES.padding * 2,
-                  marginBottom: SIZES.padding * 2,
-                }}
-              />
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
     );
   }
 
@@ -319,7 +260,6 @@ const Login = ({ navigation }) => {
           </View>
         </ScrollView>
       </LinearGradient>
-      {renderAreaCodesModal()}
     </KeyboardAvoidingView>
   );
 };

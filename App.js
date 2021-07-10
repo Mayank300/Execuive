@@ -6,6 +6,7 @@ import {
   GraphScreen,
   ProfileScreen,
   ForgotPassword,
+  ProductList,
 } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -49,6 +50,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="Graph" component={GraphScreen} />
+        <Stack.Screen name="ProductList" component={ProductList} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="GoogleSearch" component={GoogleSearch} />
         <Stack.Screen name="AmazonSearch" component={AmazonSearch} />

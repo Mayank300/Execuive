@@ -7,7 +7,7 @@ import {
 import Svg, { Path } from "react-native-svg";
 import { isIphoneX } from "react-native-iphone-x-helper";
 
-import { Home, Scan, ProfileScreen } from "../screens";
+import { Home, AddScreen, ProfileScreen, ProductList } from "../screens";
 import { COLORS, icons } from "../constants";
 import { Icon } from "react-native-elements";
 
@@ -135,36 +135,30 @@ const Tabs = () => {
         }}
       />
       <Tab.Screen
-        name="Scan"
-        component={Scan}
+        name="AddScreen"
+        component={AddScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Image
-              source={icons.scan}
-              resizeMode="contain"
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: focused ? COLORS.white : COLORS.secondary,
-              }}
+            <Icon
+              type="feather"
+              name="plus"
+              size={30}
+              color={`${focused ? COLORS.white : COLORS.secondary}`}
             />
           ),
           tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}
       />
       <Tab.Screen
-        name="User"
-        component={ProfileScreen}
+        name="ProductList"
+        component={ProductList}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Image
-              source={icons.user}
-              resizeMode="contain"
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: focused ? COLORS.white : COLORS.secondary,
-              }}
+            <Icon
+              type="feather"
+              name="list"
+              size={30}
+              color={`${focused ? COLORS.white : COLORS.secondary}`}
             />
           ),
           tabBarButton: (props) => <TabBarCustomButton {...props} />,
@@ -172,7 +166,7 @@ const Tabs = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={Home}
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon

@@ -7,7 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
-  TouchableHighlight,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Icon, Avatar } from "react-native-elements";
@@ -54,10 +54,9 @@ const Home = ({ navigation }) => {
     getUserDetails();
     var email = firebase.auth().currentUser.email;
     fetchImage(email);
-    console.log("name" + name);
   }, []);
 
-  selectPicture = async () => {
+  const selectPicture = async () => {
     const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -71,7 +70,7 @@ const Home = ({ navigation }) => {
     }
   };
 
-  uploadImage = async (uri, imageName) => {
+  const uploadImage = async (uri, imageName) => {
     var response = await fetch(uri);
     var blob = await response.blob();
 
@@ -85,7 +84,7 @@ const Home = ({ navigation }) => {
     });
   };
 
-  fetchImage = (imageName) => {
+  const fetchImage = (imageName) => {
     var storageRef = firebase
       .storage()
       .ref()
@@ -101,7 +100,7 @@ const Home = ({ navigation }) => {
       });
   };
 
-  function getUserDetails() {
+  const getUserDetails = () => {
     var email = firebase.auth().currentUser.email;
     db.collection("users")
       .where("email_id", "==", email)
@@ -109,12 +108,12 @@ const Home = ({ navigation }) => {
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           var data = doc.data();
-          setName(data.email_id);
+          setName(data.user_name);
         });
       });
-  }
+  };
 
-  function renderHeader() {
+  const renderHeader = () => {
     return (
       <View
         style={{
@@ -126,7 +125,7 @@ const Home = ({ navigation }) => {
         <View style={{ flex: 1 }}>
           <Text style={{ ...FONTS.h1 }}>Hello!</Text>
           <Text style={{ ...FONTS.body2, color: COLORS.gray, marginLeft: 12 }}>
-            {name}
+            {name === "" ? "Loading..." : <Text>{name}</Text>}
           </Text>
         </View>
 
@@ -201,9 +200,9 @@ const Home = ({ navigation }) => {
         </View>
       </View>
     );
-  }
+  };
 
-  function renderBanner() {
+  const renderBanner = () => {
     return (
       <View
         style={{
@@ -222,29 +221,20 @@ const Home = ({ navigation }) => {
         />
       </View>
     );
-  }
+  };
 
-  function renderFeatures() {
-    const Header = () => (
-      <View style={{ marginBottom: SIZES.padding * 2 }}>
-        <Text style={{ ...FONTS.h3 }}>Features</Text>
-      </View>
-    );
-
+  const renderFeatures = () => {
     return (
       <View style={{ flexDirection: "column" }}>
-        <View style={{ marginVertical: SIZES.padding * 2 }}>
-          <Text style={{ ...FONTS.h3 }}>Features</Text>
-        </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          {/* scan */}
+          {/* AddScreen */}
           <TouchableOpacity
             style={{
               marginBottom: SIZES.padding * 2,
               width: 60,
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate("Scan")}
+            onPress={() => navigation.navigate("AddScreen")}
           >
             <View
               style={{
@@ -257,20 +247,12 @@ const Home = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Image
-                source={icons.phone}
-                resizeMode="contain"
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.purple,
-                }}
-              />
+              <Icon type="feather" name="plus" color="#6B3CE9" size={30} />
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
             >
-              Scan
+              Add
             </Text>
           </TouchableOpacity>
           {/* wallet */}
@@ -360,131 +342,6 @@ const Home = ({ navigation }) => {
               Shelves
             </Text>
           </TouchableOpacity>
-          {/* settings */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => console.log("settings")}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightRed,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                source={icons.settings}
-                resizeMode="contain"
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.red,
-                }}
-              />
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Setting
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          {/* expiry */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => console.log("expiry")}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightRed,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                source={icons.alert}
-                resizeMode="contain"
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.red,
-                }}
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  top: -1,
-                  right: 1,
-                  height: 21,
-                  width: 21,
-                  backgroundColor: COLORS.red,
-                  borderRadius: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 10, color: "#fff" }}>99</Text>
-              </View>
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Expiry
-            </Text>
-          </TouchableOpacity>
-          {/* profile */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => navigation.navigate("Profile")}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightGreen,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                source={icons.user}
-                resizeMode="contain"
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.green,
-                }}
-              />
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Profile
-            </Text>
-          </TouchableOpacity>
           {/* graph */}
           <TouchableOpacity
             style={{
@@ -500,7 +357,7 @@ const Home = ({ navigation }) => {
                 width: 50,
                 marginBottom: 5,
                 borderRadius: 20,
-                backgroundColor: COLORS.lightpurple,
+                backgroundColor: COLORS.lightRed,
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -508,7 +365,7 @@ const Home = ({ navigation }) => {
               <Icon
                 type="feather"
                 name="bar-chart-2"
-                color="#6B3CE9"
+                color="#FF4134"
                 style={{
                   height: 20,
                   width: 20,
@@ -536,51 +393,12 @@ const Home = ({ navigation }) => {
               Graph
             </Text>
           </TouchableOpacity>
-          {/* logout */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => {
-              navigation.replace("Login");
-              firebase.auth().signOut();
-            }}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightyellow,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon
-                type="feather"
-                name="arrow-right"
-                color="#FFC664"
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-              />
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Logout
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
     );
-  }
+  };
 
-  function renderPromos() {
+  const renderPromos = () => {
     const HeaderComponent = () => (
       <View>
         {renderHeader()}
@@ -646,7 +464,7 @@ const Home = ({ navigation }) => {
         ListFooterComponent={<View style={{ marginBottom: 80 }}></View>}
       />
     );
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
