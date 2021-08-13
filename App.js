@@ -4,9 +4,12 @@ import {
   Login,
   OnboardingScreen,
   GraphScreen,
-  ProfileScreen,
+  SettingsScreen,
   ForgotPassword,
   ProductList,
+  ProductInfo,
+  EditProfileScreen,
+  ExpiryProduct,
 } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -25,7 +28,7 @@ const theme = {
 
 const Stack = createStackNavigator();
 
-const App = () => {
+const App = ({ navigation }) => {
   const [loaded] = useFonts({
     "Roboto-Black": require("./assets/fonts/Roboto-Black.ttf"),
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
@@ -51,9 +54,13 @@ const App = () => {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="Graph" component={GraphScreen} />
         <Stack.Screen name="ProductList" component={ProductList} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Profile" component={SettingsScreen} />
+        <Stack.Screen name="ProductInfo" component={ProductInfo} />
         <Stack.Screen name="GoogleSearch" component={GoogleSearch} />
         <Stack.Screen name="AmazonSearch" component={AmazonSearch} />
+        <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} />
+        <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+        {/* <Stack.Screen name="MyDrawer" component={MyDrawer} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,3 +1,4 @@
+import moment from "moment";
 import * as React from "react";
 import {
   StatusBar,
@@ -17,42 +18,37 @@ import {
   Directions,
   State,
 } from "react-native-gesture-handler";
+import { RFValue } from "react-native-responsive-fontsize";
+import { windowWidth } from "../constants/Dimensions";
 
 const DATA = [
   {
-    title: "Shelf 1",
+    id: "1",
+    title: "Total Products",
+    subTitle: "Total Products In\nThe Inventory",
     poster:
       "https://images.pexels.com/photos/279618/pexels-photo-279618.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
   },
   {
-    title: "Shelf 2",
+    id: "2",
+    title: "Total Cost",
+    subTitle: "Total Cost Of\nInventory",
     poster:
       "https://images.unsplash.com/photo-1572734389279-e4fa423ca9db?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=631&q=80",
   },
   {
-    title: "Shelf 3",
+    id: "3",
+    title: "Product Expired",
+    subTitle: "Total Product\nExpired",
     poster:
-      "https://www.creative-flyers.com/wp-content/uploads/2020/06/4th-Of-July-Invitation.jpg",
+      "https://images.unsplash.com/photo-1573584355722-20b870da775f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=359&q=80",
   },
   {
-    title: "Shelf 4",
+    id: "4",
+    title: "Product OutDated",
+    subTitle: "Total Product\nOutDated",
     poster:
-      "https://www.creative-flyers.com/wp-content/uploads/2020/07/Summer-Music-Festival-Poster.jpg",
-  },
-  {
-    title: "Shelf 5",
-    poster:
-      "https://www.creative-flyers.com/wp-content/uploads/2020/06/BBQ-Flyer-Psd-Template.jpg",
-  },
-  {
-    title: "Shelf 6",
-    poster:
-      "https://www.creative-flyers.com/wp-content/uploads/2020/06/Festival-Music-PSD-Template.jpg",
-  },
-  {
-    title: "Shelf 7",
-    poster:
-      "https://www.creative-flyers.com/wp-content/uploads/2020/06/Summer-Beach-House-Flyer.jpg",
+      "https://images.unsplash.com/photo-1515542706656-8e6ef17a1521?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
   },
 ];
 
@@ -85,15 +81,18 @@ const OverflowItems = ({ data, scrollXAnimated }) => {
   );
 };
 
-const ShelfCard = ({ navigation }) => {
+const ShelfCard = ({ navigation, totalProducts, totalCost, totalExpiry }) => {
   const [data, setData] = React.useState(DATA);
   const scrollXIndex = React.useRef(new Animated.Value(0)).current;
   const scrollXAnimated = React.useRef(new Animated.Value(0)).current;
   const [index, setIndex] = React.useState(0);
+  const [cost, setCost] = React.useState(0);
   const setActiveIndex = React.useCallback((activeIndex) => {
     scrollXIndex.setValue(activeIndex);
     setIndex(activeIndex);
   });
+
+  // console.log(totalExpiry);
 
   React.useEffect(() => {
     if (index === data.length - VISIBLE_ITEMS - 1) {
@@ -107,6 +106,31 @@ const ShelfCard = ({ navigation }) => {
       toValue: scrollXIndex,
       useNativeDriver: true,
     }).start();
+  });
+
+  React.useEffect(() => {
+    var productCostString = totalCost;
+    var productCostInteger = productCostString.map((i) => Number(i));
+    var totalProductCost = 0;
+    for (var i = 0; i < productCostInteger.length; i++) {
+      totalProductCost += productCostInteger[i];
+    }
+    totalProductCost = totalProductCost.toString();
+    var lastThree = totalProductCost.substring(totalProductCost.length - 3);
+    var otherNumbers = totalProductCost.substring(
+      0,
+      totalProductCost.length - 3
+    );
+    if (otherNumbers != "") lastThree = "," + lastThree;
+    var finalCost =
+      otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    setCost(finalCost);
+  });
+
+  React.useEffect(() => {
+    var dateArray = totalExpiry;
+    var finalDate = [];
+    // console.log(dateArray);
   });
 
   const navFunction = () => {
@@ -204,6 +228,34 @@ const ShelfCard = ({ navigation }) => {
                         borderRadius: 14,
                       }}
                     />
+
+                    {item.id === "1" ? (
+                      <View style={styles.imageText}>
+                        <Text style={styles.subText}>{totalProducts}</Text>
+                      </View>
+                    ) : null}
+
+                    {item.id === "2" ? (
+                      <View style={styles.imageText2}>
+                        <Text numberOfLines={1} style={styles.subText}>
+                          {cost}
+                        </Text>
+                      </View>
+                    ) : null}
+
+                    {item.id === "3" ? (
+                      <View style={styles.imageText}>
+                        <Text style={styles.subText}>20</Text>
+                      </View>
+                    ) : null}
+
+                    {item.id === "4" ? (
+                      <View style={styles.imageText}>
+                        <Text style={styles.subText}>30</Text>
+                      </View>
+                    ) : null}
+
+                    <Text style={styles.imageSubText}>{item.subTitle}</Text>
                   </Animated.View>
                 </TouchableOpacity>
               );
@@ -214,6 +266,8 @@ const ShelfCard = ({ navigation }) => {
     </FlingGestureHandler>
   );
 };
+
+export default ShelfCard;
 
 const styles = StyleSheet.create({
   container: {
@@ -240,6 +294,39 @@ const styles = StyleSheet.create({
     height: OVERFLOW_HEIGHT,
     overflow: "hidden",
   },
+  imageText: {
+    position: "absolute",
+    top: 30,
+    right: 30,
+    borderWidth: 1,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    borderColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageText2: {
+    position: "absolute",
+    top: 30,
+    right: 20,
+    height: 40,
+    width: windowWidth / 1.5,
+    height: 40,
+    justifyContent: "center",
+  },
+  imageSubText: {
+    position: "absolute",
+    top: 180,
+    left: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: RFValue(23),
+  },
+  subText: {
+    textAlign: "right",
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: RFValue(23),
+  },
 });
-
-export default ShelfCard;

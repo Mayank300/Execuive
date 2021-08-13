@@ -7,7 +7,7 @@ import {
 import Svg, { Path } from "react-native-svg";
 import { isIphoneX } from "react-native-iphone-x-helper";
 
-import { Home, AddScreen, ProfileScreen, ProductList } from "../screens";
+import { Home, AddScreen, SettingsScreen, ProductList } from "../screens";
 import { COLORS, icons } from "../constants";
 import { Icon } from "react-native-elements";
 
@@ -166,7 +166,7 @@ const Tabs = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={ProfileScreen}
+        component={SettingsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon

@@ -4,9 +4,12 @@ import SignUp from "./SignUp";
 import Login from "./Login";
 import OnboardingScreen from "./OnboardingScreen";
 import GraphScreen from "./GraphScreen";
-import ProfileScreen from "./ProfileScreen";
+import SettingsScreen from "./SettingsScreen";
 import ForgotPassword from "./ForgotPassword";
 import ProductList from "./ProductList";
+import ProductInfo from "./ProductInfo";
+import ExpiryProduct from "./ExpiryProduct";
+import EditProfileScreen from "./EditProfileScreen";
 
 export {
   Home,
@@ -15,7 +18,10 @@ export {
   Login,
   OnboardingScreen,
   GraphScreen,
-  ProfileScreen,
+  SettingsScreen,
   ForgotPassword,
   ProductList,
+  ProductInfo,
+  ExpiryProduct,
+  EditProfileScreen,
 };

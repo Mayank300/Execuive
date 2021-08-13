@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+
 import {
   View,
   Text,
@@ -10,17 +11,22 @@ import {
   Platform,
   Alert,
   StatusBar,
+  StyleSheet,
+  Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
-import firebase from "firebase";
+import * as firebase from "firebase";
 import db from "../firebase/config";
 import { Icon } from "react-native-elements";
 import { windowWidth } from "../constants/Dimensions";
+import {
+  FirebaseRecaptchaVerifierModal,
+  FirebaseRecaptchaBanner,
+} from "expo-firebase-recaptcha";
 
 const ForgotPassword = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
-
   const sendPasswordReset = () => {
     if (user_email !== "") {
       firebase
@@ -29,7 +35,7 @@ const ForgotPassword = ({ navigation }) => {
         .then(() => {
           setUser_email("");
           navigation.replace("Login");
-          return alert("Check registered email and change passowrd ");
+          return alert("Check registered email and change password ");
         })
         .catch((error) => {
           var errorCode = error.code;
@@ -167,7 +173,9 @@ const ForgotPassword = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => sendPasswordReset()}
+          onPress={() => {
+            sendPasswordReset();
+          }}
         >
           <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Verify</Text>
         </TouchableOpacity>
@@ -196,3 +204,17 @@ const ForgotPassword = ({ navigation }) => {
 };
 
 export default ForgotPassword;
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderColor: COLORS.white,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    height: 50,
+    width: 40,
+    textAlign: "center",
+    color: COLORS.white,
+    ...FONTS.body2,
+    borderRadius: 15,
+  },
+});

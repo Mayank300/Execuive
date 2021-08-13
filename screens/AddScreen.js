@@ -478,7 +478,11 @@ const AddProduct = () => {
               justifyContent: "center",
             }}
             onPress={() => {
-              addProduct();
+              {
+                productName !== "" && quantity !== "" && totalCost !== ""
+                  ? addProduct()
+                  : alert("fill the appropriate details!");
+              }
             }}
           >
             <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
@@ -492,7 +496,7 @@ const AddProduct = () => {
     return (
       <View
         style={{
-          backgroundColor: COLORS.green,
+          backgroundColor: COLORS.lightgray,
           height: windowHeight,
           width: windowWidth,
         }}

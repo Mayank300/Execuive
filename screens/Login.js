@@ -25,25 +25,25 @@ const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [user_email, setUser_email] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
-  var userDetails = firebase.auth().currentUser;
 
   const login = (emailId, password) => {
-    // if (!userDetails.emailVerified) {
-    // Alert.alert("Check & Verify Email Before Login");
-    // } else {
     firebase
       .auth()
       .signInWithEmailAndPassword(emailId, password)
-      .then(() => {
-        navigation.replace("Home");
-        alert("Logged in successfully !");
+      .then((authUser) => {
+        console.log(authUser.user.emailVerified);
+        if (authUser.user.emailVerified) {
+          navigation.replace("Home");
+          return alert("Logged in successfully !");
+        } else {
+          return alert("Verify Email before login !");
+        }
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
         return Alert.alert(errorMessage);
       });
-    // }
   };
 
   function renderLogo() {

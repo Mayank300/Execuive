@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   FlatList,
   Platform,
+  Modal,
+  TextInput,
+  Alert,
 } from "react-native";
 import moment from "moment";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
@@ -16,6 +19,7 @@ import * as Animated from "react-native-animatable";
 import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
 import LottieView from "lottie-react-native";
+import { Icon } from "react-native-elements/dist/icons/Icon";
 
 export default class ProductList extends React.Component {
   constructor(props) {
@@ -36,10 +40,25 @@ export default class ProductList extends React.Component {
   }
 
   getProductList = () => {
+    // var today = new Date();
+    // var dd = String(today.getDate()).padStart(2, "0");
+    // var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    // var yyyy = today.getFullYear();
+    // today = yyyy + "-" + mm + "-" + dd;
+    // var filteredDate = today;
+
+    // var date = moment(filteredDate).isAfter("2020-09-09", "year"); // false
+    // console.log(date);
+
+    // let date = new Date();
+    // date.setDate(date.getDate() + 10);
+
     var email = firebase.auth().currentUser.email;
     this.productRef = db
       .collection("products")
       .where("user_id", "==", email)
+      // .where("exp_date", ">", date)
+      // .where("exp_date", "<", date)
       .onSnapshot((snapshot) => {
         var DATA = [];
         snapshot.docs.map((doc) => {
@@ -89,15 +108,43 @@ export default class ProductList extends React.Component {
     alert("Id : " + item.product_id + " Title : " + item.product_name);
   };
 
-  deleteTask = (product_id) => {
-    var delete_task = db
-      .collection("products")
-      .where("product_id", "==", product_id);
+  deleteProduct = (id) => {
+    var delete_task = db.collection("products").where("product_id", "==", id);
     delete_task.get().then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         doc.ref.delete();
       });
     });
+    console.log();
+  };
+
+  showAlert = (item) => {
+    return Alert.alert(`${item.product_name}`, `Expires on ${item.exp_date}`, [
+      {
+        text: "View",
+        onPress: () => {
+          this.props.navigation.navigate("ProductInfo", {
+            name: item.product_name,
+            exp_date: item.exp_date,
+            color: item.product_color,
+            id: item.product_id,
+            cost: item.total_cost,
+            quantity: item.quantity,
+          });
+        },
+        style: "cancel",
+      },
+
+      {
+        text: "Delete",
+        onPress: () => this.deleteProduct(item.product_id),
+      },
+      {
+        text: "Cancle",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
   };
 
   componentWillUnmount() {
@@ -152,7 +199,7 @@ export default class ProductList extends React.Component {
                     return (
                       <View styles={styles.container}>
                         <TouchableOpacity
-                          onPress={() => {}}
+                          onPress={() => this.showAlert(item)}
                           key={i}
                           style={styles.productListContent}
                         >
@@ -430,5 +477,47 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 5,
     padding: 22,
+  },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

@@ -4,51 +4,21 @@ import {
   View,
   Text,
   Image,
-  FlatList,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator,
 } from "react-native";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Icon, Avatar } from "react-native-elements";
 import firebase from "firebase";
 import db from "../firebase/config";
-import { LinearGradient } from "expo-linear-gradient";
-import { windowHeight, windowWidth } from "../constants/Dimensions";
 import * as ImagePicker from "expo-image-picker";
-import ShelfCard from "./ShelfCard";
+import ExpiryProduct from "./ExpiryProduct";
+import { DrawerActions } from "@react-navigation/native";
 
 const Home = ({ navigation }) => {
-  const specialPromoData = [
-    {
-      id: 1,
-      img: images.promoBanner,
-      title: "Bonus Cashback1",
-      description: "Don't miss it. Grab it now!",
-    },
-    {
-      id: 2,
-      img: images.promoBanner,
-      title: "Bonus Cashback2",
-      description: "Don't miss it. Grab it now!",
-    },
-    {
-      id: 3,
-      img: images.promoBanner,
-      title: "Bonus Cashback3",
-      description: "Don't miss it. Grab it now!",
-    },
-    {
-      id: 4,
-      img: images.promoBanner,
-      title: "Bonus Cashback4",
-      description: "Don't miss it. Grab it now!",
-    },
-  ];
-
-  const [specialPromos, setSpecialPromos] = React.useState(specialPromoData);
   const [name, setName] = React.useState("");
   const [image, setImage] = React.useState("#");
+  const [docId, setDocId] = React.useState("");
 
   useEffect(() => {
     getUserDetails();
@@ -109,6 +79,7 @@ const Home = ({ navigation }) => {
         snapshot.forEach((doc) => {
           var data = doc.data();
           setName(data.user_name);
+          setDocId(doc.id);
         });
       });
   };
@@ -137,7 +108,7 @@ const Home = ({ navigation }) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => console.log("notification")}
+            onPress={() => {}}
             style={{
               height: 40,
               width: 40,
@@ -198,27 +169,6 @@ const Home = ({ navigation }) => {
             )}
           </View>
         </View>
-      </View>
-    );
-  };
-
-  const renderBanner = () => {
-    return (
-      <View
-        style={{
-          height: 120,
-          borderRadius: 20,
-        }}
-      >
-        <Image
-          source={images.banner}
-          resizeMode="cover"
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 20,
-          }}
-        />
       </View>
     );
   };
@@ -398,77 +348,12 @@ const Home = ({ navigation }) => {
     );
   };
 
-  const renderPromos = () => {
-    const HeaderComponent = () => (
-      <View>
-        {renderHeader()}
-        <View style={{ height: 400 }}>
-          <ShelfCard />
-        </View>
-        {renderFeatures()}
-      </View>
-    );
-
-    const renderItem = ({ item }) => (
-      <TouchableOpacity
-        style={{
-          marginVertical: SIZES.base,
-          width: SIZES.width / 2.5,
-        }}
-        onPress={() => console.log(item.title)}
-      >
-        <View
-          style={{
-            height: 80,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            backgroundColor: COLORS.primary,
-          }}
-        >
-          <Image
-            source={images.promoBanner}
-            resizeMode="cover"
-            style={{
-              width: "100%",
-              height: "100%",
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-            }}
-          />
-        </View>
-
-        <View
-          style={{
-            padding: SIZES.padding,
-            backgroundColor: COLORS.lightGray,
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
-          }}
-        >
-          <Text style={{ ...FONTS.h4 }}>{item.title}</Text>
-          <Text style={{ ...FONTS.body4 }}>{item.description}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-
-    return (
-      <FlatList
-        ListHeaderComponent={HeaderComponent}
-        contentContainerStyle={{ paddingHorizontal: SIZES.padding * 3 }}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between" }}
-        data={specialPromos}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={<View style={{ marginBottom: 80 }}></View>}
-      />
-    );
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      {renderPromos()}
+      <ExpiryProduct
+        renderHeader={renderHeader()}
+        renderFeatures={renderFeatures()}
+      />
     </SafeAreaView>
   );
 };

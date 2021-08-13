@@ -16,22 +16,23 @@ import firebase from "firebase";
 const DATA = [
   {
     key: "3571572",
-    title: "Example 1",
+    title: "Focus on being productive instead of busy.",
     image: "https://image.flaticon.com/icons/png/512/4433/4433148.png",
   },
   {
     key: "3571747",
-    title: "Example 2",
+    title:
+      "Manage your inventory and be up to date by getting notifications of your products.",
     image: "https://image.flaticon.com/icons/png/512/4861/4861747.png",
   },
   {
     key: "3571680",
-    title: "Example 3",
+    title: "Add, Remove, Share and lot more...",
     image: "https://image.flaticon.com/icons/png/512/4861/4861810.png",
   },
   {
     key: "3571603",
-    title: "Example 4",
+    title: "Get Started !",
     image: "https://image.flaticon.com/icons/png/512/4861/4861826.png",
   },
 ];
@@ -121,32 +122,18 @@ const Square = ({ scrollX }) => {
 
 export default function OnboardingScreen({ navigation }) {
   // React.useEffect(() => {
-  //   // checkIfLoggedIn();
+  //   checkIfLoggedIn();
   // });
 
   // function checkIfLoggedIn() {
-  //   firebase.auth().onAuthStateChanged((authUser) => {
-  //     if (authUser.user.emailVerified) {
-  //       console.log("email is verified");
+  //   firebase.auth().onAuthStateChanged((user) => {
+  //     if (user) {
+  //       navigation.replace("Home");
   //     } else {
-  //       console.log("email not verified");
+  //       return null;
   //     }
   //   });
   // }
-
-  React.useEffect(() => {
-    checkIfLoggedIn();
-  });
-
-  function checkIfLoggedIn() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("Home");
-      } else {
-        return null;
-      }
-    });
-  }
 
   const scrollX = React.useRef(new Animated.Value(0)).current;
   return (

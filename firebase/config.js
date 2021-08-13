@@ -2,12 +2,12 @@ import firebase from "firebase";
 require("@firebase/firestore");
 
 var firebaseConfig = {
-  apiKey: "AIzaSyCgoxXBYILggp2drwG9mEvbpwVDTyT0MgA",
-  authDomain: "executive-003.firebaseapp.com",
-  projectId: "executive-003",
-  storageBucket: "executive-003.appspot.com",
-  messagingSenderId: "171399653823",
-  appId: "1:171399653823:web:80fa8238f2ac8dfb54590a",
+  apiKey: "AIzaSyAwece7RVV4qAXCVt9zjeMY4itM2kbyWv4",
+  authDomain: "executive-2021.firebaseapp.com",
+  projectId: "executive-2021",
+  storageBucket: "executive-2021.appspot.com",
+  messagingSenderId: "197300104961",
+  appId: "1:197300104961:web:c114981e1500f85d3b7500",
 };
 
 if (!firebase.apps.length) {
