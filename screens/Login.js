@@ -31,7 +31,6 @@ const Login = ({ navigation }) => {
       .auth()
       .signInWithEmailAndPassword(emailId, password)
       .then((authUser) => {
-        console.log(authUser.user.emailVerified);
         if (authUser.user.emailVerified) {
           navigation.replace("Home");
           return alert("Logged in successfully !");

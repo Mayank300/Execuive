@@ -10,6 +10,9 @@ import ProductList from "./ProductList";
 import ProductInfo from "./ProductInfo";
 import ExpiryProduct from "./ExpiryProduct";
 import EditProfileScreen from "./EditProfileScreen";
+import NotificationScreen from "./NotificationScreen";
+import BillScreen from "./BillScreen";
+import OTPVerification from "./OTPVerification";
 
 export {
   Home,
@@ -24,4 +27,7 @@ export {
   ProductInfo,
   ExpiryProduct,
   EditProfileScreen,
+  NotificationScreen,
+  BillScreen,
+  OTPVerification,
 };

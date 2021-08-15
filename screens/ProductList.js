@@ -48,7 +48,6 @@ export default class ProductList extends React.Component {
     // var filteredDate = today;
 
     // var date = moment(filteredDate).isAfter("2020-09-09", "year"); // false
-    // console.log(date);
 
     // let date = new Date();
     // date.setDate(date.getDate() + 10);
@@ -115,7 +114,6 @@ export default class ProductList extends React.Component {
         doc.ref.delete();
       });
     });
-    console.log();
   };
 
   showAlert = (item) => {

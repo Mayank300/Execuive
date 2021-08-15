@@ -92,8 +92,6 @@ const ShelfCard = ({ navigation, totalProducts, totalCost, totalExpiry }) => {
     setIndex(activeIndex);
   });
 
-  // console.log(totalExpiry);
-
   React.useEffect(() => {
     if (index === data.length - VISIBLE_ITEMS - 1) {
       const newData = [...data, ...data];
@@ -125,12 +123,6 @@ const ShelfCard = ({ navigation, totalProducts, totalCost, totalExpiry }) => {
     var finalCost =
       otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
     setCost(finalCost);
-  });
-
-  React.useEffect(() => {
-    var dateArray = totalExpiry;
-    var finalDate = [];
-    // console.log(dateArray);
   });
 
   const navFunction = () => {

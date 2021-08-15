@@ -1,16 +1,12 @@
 import React, { useState, useEffect, PropTypes } from "react";
 import {
   View,
-  ImageBackground,
   ScrollView,
   TouchableOpacity,
   Share,
   StyleSheet,
   Image,
   Alert,
-  TouchableWithoutFeedback,
-  Modal,
-  TextInput,
 } from "react-native";
 import firebase from "firebase";
 import db from "../firebase/config";
@@ -254,20 +250,30 @@ const SettingsScreen = ({ navigation }) => {
                 onPress={() => selectPicture()}
               />
             )}
-            <View style={{ marginLeft: 20 }}>
-              <Title
-                style={[
-                  styles.title,
-                  {
-                    marginTop: 15,
-                    marginBottom: 5,
-                  },
-                ]}
-              >
-                {name}
-              </Title>
-              <Caption style={styles.caption}>{email}</Caption>
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(`${name}`, `${email}`);
+              }}
+            >
+              <View style={{ marginLeft: 20, width: windowWidth / 1.8 }}>
+                <Title
+                  numberOfLines={1}
+                  style={[
+                    styles.title,
+                    {
+                      marginTop: 15,
+                      marginBottom: 5,
+                    },
+                  ]}
+                >
+                  {name}
+                </Title>
+
+                <Caption numberOfLines={1} style={styles.caption}>
+                  {email}
+                </Caption>
+              </View>
+            </TouchableOpacity>
           </View>
           <Icon
             type="feather"
@@ -304,7 +310,7 @@ const SettingsScreen = ({ navigation }) => {
       <View style={styles.infoBoxWrapper}>
         <TouchableOpacity
           onPress={() => {
-            alert(`₹ ${cost}`);
+            Alert.alert("Cost", `₹ ${cost}`);
           }}
           style={[
             styles.infoBox,

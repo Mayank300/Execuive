@@ -10,11 +10,8 @@ import { TextInput } from "react-native";
 import { TouchableOpacity, ScrollView, Modal, Alert } from "react-native";
 
 const EditProfileScreen = ({ navigation }) => {
-  const [user_password, setUser_password] = React.useState("");
-
   const [user_name, setUser_name] = React.useState("");
   const [user_contact, setUser_contact] = React.useState("");
-  const [authUserPassword, setAuthUserPassowrd] = React.useState("");
   const [docId, setDocID] = React.useState("");
 
   const [image, setImage] = useState("#");
@@ -78,23 +75,27 @@ const EditProfileScreen = ({ navigation }) => {
           var data = doc.data();
           setUser_name(data.user_name);
           setUser_contact(data.contact);
-          setAuthUserPassowrd(data.password);
           setDocID(doc.id);
         });
       });
   };
 
   const updateUserDetails = () => {
-    db.collection("users")
-      .doc(docId)
-      .update({
-        user_name: user_name,
-        contact: user_contact,
-      })
-      .then(() => {
-        navigation.replace("Home");
-        return Alert.alert("Profile Updated Successfully");
-      });
+    {
+      user_name !== "" && user_contact.length === 10
+        ? db
+            .collection("users")
+            .doc(docId)
+            .update({
+              user_name: user_name,
+              contact: user_contact,
+            })
+            .then(() => {
+              navigation.replace("Home");
+              return Alert.alert("Profile Updated Successfully");
+            })
+        : alert("Please fill or recheck data");
+    }
   };
 
   function renderForm() {

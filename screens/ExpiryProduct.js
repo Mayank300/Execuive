@@ -48,6 +48,19 @@ export default class ExpiryProduct extends Component {
         var DATA = [];
         var COST = [];
         var EXPIRY = [];
+
+        // compare dates
+        var date = moment("2013-03-24");
+        var now = moment();
+
+        if (now > date) {
+          console.log("past");
+        } else {
+          console.log("future");
+        }
+
+        // compare dates
+
         snapshot.docs.map((doc) => {
           var list = doc.data();
           var cost = doc.data().total_cost;
@@ -154,7 +167,6 @@ export default class ExpiryProduct extends Component {
         doc.ref.delete();
       });
     });
-    console.log();
   };
 
   showAlert = (selectedProduct) => {

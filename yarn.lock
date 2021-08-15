@@ -2006,6 +2006,11 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@react-native-clipboard/clipboard@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.8.4.tgz#4bc1fb00643688e489d8220cd635844ab5c066f9"
+  integrity sha512-poFq3RvXzkbXcqoQNssbZ+aNbCRzBFAWkR9QL7u9xNMgsyWZtk7d16JQoaBo8D2E+kKi+/9JOiVQzA5w+9N67w==
+
 "@react-native-community/cli-debugger-ui@^4.13.1":
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.13.1.tgz#07de6d4dab80ec49231de1f1fbf658b4ad39b32c"
@@ -5821,6 +5826,11 @@ path-parse@^1.0.6:
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
+paths-js@^0.4.10:
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/paths-js/-/paths-js-0.4.11.tgz#b2a9d5f94ee9949aa8fee945f78a12abff44599e"
+  integrity sha512-3mqcLomDBXOo7Fo+UlaenG6f71bk1ZezPQy2JCmYHy2W2k5VKpP+Jbin9H0bjXynelTbglCqdFhSEkeIkKTYUA==
+
 phin@^2.9.1:
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/phin/-/phin-2.9.3.tgz#f9b6ac10a035636fb65dfc576aaaa17b8743125c"
@@ -5888,6 +5898,11 @@ pngjs@^3.0.0, pngjs@^3.3.0, pngjs@^3.3.3:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-3.4.0.tgz#99ca7d725965fb655814eaf65f38f12bbdbf555f"
   integrity sha512-NCrCHhWmnQklfH4MtJMRjZ2a8c80qXeMlQMv2uVp9ISJMTt562SbGd6n2oq0PaPgKm7Z6pL9E2UlLIhC+SHL3w==
+
+point-in-polygon@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/point-in-polygon/-/point-in-polygon-1.1.0.tgz#b0af2616c01bdee341cbf2894df643387ca03357"
+  integrity sha512-3ojrFwjnnw8Q9242TzgXuTD+eKiutbzyslcq1ydfu82Db2y+Ogbmyrkpv0Hgj31qwT3lbS9+QAAO/pIQM35XRw==
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
@@ -6076,6 +6091,15 @@ react-native-calendars@^1.1264.0:
   optionalDependencies:
     moment "^2.24.0"
 
+react-native-chart-kit@^6.11.0:
+  version "6.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-chart-kit/-/react-native-chart-kit-6.11.0.tgz#513e0944cd8f946e1827facc17fe766ae487d91b"
+  integrity sha512-mRSfW+mcyVSi0UZKFucru5h5TPB6UcWrMi/DphICRpPJWlvIVAv/6VYGFA57NFDLoRVufFjbsRRrms+TOq61jw==
+  dependencies:
+    lodash "^4.17.13"
+    paths-js "^0.4.10"
+    point-in-polygon "^1.0.1"
+
 react-native-elements@^3.4.2:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/react-native-elements/-/react-native-elements-3.4.2.tgz#66602be9c5e0e0a2a831913adec80ff6518d1ee2"
@@ -6115,6 +6139,18 @@ react-native-mail@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/react-native-mail/-/react-native-mail-6.1.0.tgz#cd7fa390824f5d1182fbe0599d135d221d11d205"
   integrity sha512-u2JqlHe19OKbXPKx3mNhBTuF7LfM4EkpVG/DkpY5i5G+dgOz8rRtBDKvcuJfUQnMBNav3kwvcwArjOG3rZhJZQ==
+
+react-native-otp-inputs@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-otp-inputs/-/react-native-otp-inputs-7.0.3.tgz#f341284ff5f865239c59f0aad008994e26b114cb"
+  integrity sha512-s+Bfcct2xpNSOqO9EiGjDh0RzwjDuiNW+nH41BzUz3ahL2iHo073RutHtb4wrvHX9r8f9aJNsfI9HtVCS80slA==
+
+react-native-otp-textinput@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-otp-textinput/-/react-native-otp-textinput-0.0.8.tgz#ca9a43f14712c09051a692a9ceb2c054b9975e1c"
+  integrity sha512-jBYawUTa6qo7tUaHNZTYdNPGztSYjaPMX5iSOSiSQPy3+VQ+LqtLy5QschldFPJuh0pNDKqIB0d3K0kAEuC5Kg==
+  dependencies:
+    prop-types "^15.6.2"
 
 react-native-paper@^4.9.2:
   version "4.9.2"
@@ -6185,6 +6221,11 @@ react-native-swipe-gestures@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz#a172cb0f3e7478ccd681fd36b8bfbcdd098bde7c"
   integrity sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==
+
+react-native-swipe-list-view@^3.2.9:
+  version "3.2.9"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-list-view/-/react-native-swipe-list-view-3.2.9.tgz#d725c7cdf481dd5df12a00dbfe0120013b5f2e59"
+  integrity sha512-SjAEuHc/D6ovp+RjDUhfNmw6NYOntdT7+GFhfMGfP/BSLMuMWynpzJy9GKQeyB8sI78T6Lzip21TVbongOg1Mw==
 
 react-native-tab-view@^2.16.0:
   version "2.16.0"

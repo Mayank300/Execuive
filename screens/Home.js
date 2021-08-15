@@ -6,6 +6,9 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
+  TouchableWithoutFeedback,
+  Modal,
+  StyleSheet,
 } from "react-native";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Icon, Avatar } from "react-native-elements";
@@ -14,45 +17,23 @@ import db from "../firebase/config";
 import * as ImagePicker from "expo-image-picker";
 import ExpiryProduct from "./ExpiryProduct";
 import { DrawerActions } from "@react-navigation/native";
+import moment from "moment";
+import { ActivityIndicator } from "react-native";
+import { windowHeight, windowWidth } from "../constants/Dimensions";
 
 const Home = ({ navigation }) => {
   const [name, setName] = React.useState("");
   const [image, setImage] = React.useState("#");
   const [docId, setDocId] = React.useState("");
+  const [allNotifications, setAllNotifications] = React.useState([]);
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   useEffect(() => {
     getUserDetails();
+    getNotifications();
     var email = firebase.auth().currentUser.email;
     fetchImage(email);
   }, []);
-
-  const selectPicture = async () => {
-    const { cancelled, uri } = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    var user_Id = firebase.auth().currentUser.email;
-    if (!cancelled) {
-      uploadImage(uri, user_Id);
-    }
-  };
-
-  const uploadImage = async (uri, imageName) => {
-    var response = await fetch(uri);
-    var blob = await response.blob();
-
-    var ref = firebase
-      .storage()
-      .ref()
-      .child("user_profiles/" + imageName);
-
-    return ref.put(blob).then((response) => {
-      fetchImage(imageName);
-    });
-  };
 
   const fetchImage = (imageName) => {
     var storageRef = firebase
@@ -84,6 +65,21 @@ const Home = ({ navigation }) => {
       });
   };
 
+  const getNotifications = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("notifications")
+      .where("notification_status", "==", "unread")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var allNotifications = [];
+        snapshot.docs.map((doc) => {
+          var notification = doc.data();
+          allNotifications.push(notification);
+        });
+        setAllNotifications(allNotifications);
+      });
+  };
+
   const renderHeader = () => {
     return (
       <View
@@ -108,7 +104,9 @@ const Home = ({ navigation }) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate("Notification");
+            }}
             style={{
               height: 40,
               width: 40,
@@ -130,7 +128,9 @@ const Home = ({ navigation }) => {
                 alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: 10, color: "#fff" }}>99</Text>
+              <Text style={{ fontSize: 10, color: "#fff" }}>
+                {allNotifications.length}
+              </Text>
             </View>
           </TouchableOpacity>
           <View style={{ marginLeft: 20 }}>
@@ -139,7 +139,7 @@ const Home = ({ navigation }) => {
                 rounded
                 source={require("../assets/images/edit.png")}
                 size="medium"
-                onPress={() => selectPicture()}
+                onPress={() => navigation.navigate("Profile")}
                 containerStyle={{
                   imageContainer: {
                     flex: 0.75,
@@ -156,7 +156,7 @@ const Home = ({ navigation }) => {
                   uri: image,
                 }}
                 size="medium"
-                onPress={() => selectPicture()}
+                onPress={() => setModalVisible(!modalVisible)}
                 containerStyle={{
                   imageContainer: {
                     flex: 0.75,
@@ -212,7 +212,7 @@ const Home = ({ navigation }) => {
               width: 60,
               alignItems: "center",
             }}
-            onPress={() => console.log("wallet")}
+            onPress={() => navigation.navigate("Bill")}
           >
             <View
               style={{
@@ -253,7 +253,7 @@ const Home = ({ navigation }) => {
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
             >
-              Wallet
+              Bill
             </Text>
           </TouchableOpacity>
           {/* shelf */}
@@ -263,7 +263,9 @@ const Home = ({ navigation }) => {
               width: 60,
               alignItems: "center",
             }}
-            onPress={() => console.log("shelf")}
+            onPress={() => {
+              console.log("pressed");
+            }}
           >
             <View
               style={{
@@ -350,6 +352,20 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <View style={styles.modalContainer}>
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View style={styles.modalSubContainer}>
+              <Image
+                source={{
+                  uri: image,
+                }}
+                style={styles.image}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </Modal>
       <ExpiryProduct
         renderHeader={renderHeader()}
         renderFeatures={renderFeatures()}
@@ -359,3 +375,24 @@ const Home = ({ navigation }) => {
 };
 
 export default Home;
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: windowHeight,
+    width: windowWidth,
+    backgroundColor: "rgba(0,0,0,0.7)",
+  },
+  subContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: SIZES.radius,
+  },
+});

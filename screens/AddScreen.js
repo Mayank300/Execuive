@@ -54,7 +54,6 @@ const ScanProduct = ({ navigation }) => {
     setScanned(true);
     alert("Bar code scanned successfully !");
     setData(data);
-    console.log(data);
   };
 
   function renderHeader() {
@@ -101,7 +100,7 @@ const ScanProduct = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => console.log("Info")}
+          onPress={() => {}}
         >
           <Image
             source={icons.info}
@@ -350,7 +349,6 @@ const ScanProduct = ({ navigation }) => {
 };
 
 const AddProduct = () => {
-  const [image, setImage] = React.useState("#");
   const [quantity, setQuantity] = React.useState("");
   const [totalCost, setTotalCost] = React.useState("");
   const [productName, setProductName] = React.useState("");
@@ -380,6 +378,7 @@ const AddProduct = () => {
   const addProduct = () => {
     var userId = firebase.auth().currentUser.email;
     var randomNum = Math.random().toString(36).substring(7);
+    var dateAdded = moment().format("YYYY-MM-DD");
     db.collection("products").add({
       product_name: productName,
       quantity: quantity,
@@ -388,6 +387,16 @@ const AddProduct = () => {
       product_id: randomNum,
       user_id: userId,
       product_color: color,
+      date_added: dateAdded,
+    });
+    db.collection("notifications").add({
+      id: Math.random().toString(36).substring(7),
+      exp_date: currentDay,
+      color: color,
+      user_id: userId,
+      product_name: productName,
+      notification_title: "Product Added Successfully",
+      notification_status: "unread",
     });
     alert("Product Added Successfully");
     setQuantity("");
@@ -523,7 +532,6 @@ const AddProduct = () => {
             <TextInput
               value={productName}
               onChangeText={(text) => setProductName(text)}
-              keyboardType="email-address"
               style={styles.textInput}
               placeholder="Enter Product Name"
               placeholderTextColor={COLORS.black}

@@ -10,6 +10,9 @@ import {
   ProductInfo,
   EditProfileScreen,
   ExpiryProduct,
+  NotificationScreen,
+  BillScreen,
+  OTPVerification,
 } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -60,7 +63,9 @@ const App = ({ navigation }) => {
         <Stack.Screen name="AmazonSearch" component={AmazonSearch} />
         <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} />
         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
-        {/* <Stack.Screen name="MyDrawer" component={MyDrawer} /> */}
+        <Stack.Screen name="Notification" component={NotificationScreen} />
+        <Stack.Screen name="Bill" component={BillScreen} />
+        <Stack.Screen name="OTPVerification" component={OTPVerification} />
       </Stack.Navigator>
     </NavigationContainer>
   );

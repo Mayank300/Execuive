@@ -121,19 +121,19 @@ const Square = ({ scrollX }) => {
 };
 
 export default function OnboardingScreen({ navigation }) {
-  // React.useEffect(() => {
-  //   checkIfLoggedIn();
-  // });
+  React.useEffect(() => {
+    checkIfLoggedIn();
+  });
 
-  // function checkIfLoggedIn() {
-  //   firebase.auth().onAuthStateChanged((user) => {
-  //     if (user) {
-  //       navigation.replace("Home");
-  //     } else {
-  //       return null;
-  //     }
-  //   });
-  // }
+  function checkIfLoggedIn() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        navigation.replace("Home");
+      } else {
+        return null;
+      }
+    });
+  }
 
   const scrollX = React.useRef(new Animated.Value(0)).current;
   return (

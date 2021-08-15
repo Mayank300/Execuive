@@ -12,11 +12,11 @@ import {
   ScrollView,
   Platform,
   Alert,
+  Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import firebase from "firebase";
 import db from "../firebase/config";
-
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { StatusBar } from "react-native";
 
@@ -30,6 +30,7 @@ const SignUp = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
   const [user_contact, setUser_contact] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
+  const [confirmResult, setConfirmResult] = React.useState(null);
 
   React.useEffect(() => {
     fetch("https://restcountries.eu/rest/v2/all")
@@ -57,30 +58,56 @@ const SignUp = ({ navigation }) => {
   }, []);
 
   const signUpMethod = (emailId, password) => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(emailId, password)
-      .then(() => {
-        firebase
-          .auth()
-          .currentUser.sendEmailVerification()
-          .then(() => {
-            return Alert.alert("Check Email And Verify It To Login");
-          });
-        db.collection("users").add({
-          user_name: user_name,
-          email_id: user_email,
-          contact: user_contact,
-          selected_area: selectedArea,
-        });
+    {
+      user_name !== "" && user_contact.length === 10
+        ? firebase
+            .auth()
+            .createUserWithEmailAndPassword(emailId, password)
+            .then(() => {
+              firebase
+                .auth()
+                .currentUser.sendEmailVerification()
+                .then(() => {
+                  return Alert.alert("Check Email And Verify It To Login");
+                });
+              db.collection("users").add({
+                user_name: user_name,
+                email_id: user_email,
+                contact: user_contact,
+                selected_area: selectedArea,
+              });
 
-        navigation.replace("Login");
-      })
-      .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        return Alert.alert(errorMessage);
-      });
+              navigation.replace("Login");
+            })
+            .catch((error) => {
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              return Alert.alert(errorMessage);
+            })
+        : alert("Please enter name or check phone number");
+    }
+  };
+
+  const handleSendCode = () => {
+    if (
+      // user_contact.length === 10 &&
+      user_name !== ""
+    ) {
+      firebase
+        .auth()
+        .signInWithPhoneNumber(user_contact)
+        .then((confirmResult) => {
+          setConfirmResult(confirmResult);
+          console.log("success");
+          // signUpMethod(user_email, user_password);
+        })
+        .catch((error) => {
+          alert(error.message);
+          console.log(error);
+        });
+    } else {
+      alert("Invalid Phone Number");
+    }
   };
 
   function renderHeader() {
@@ -371,7 +398,7 @@ const SignUp = ({ navigation }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            signUpMethod(user_email, user_password);
+            handleSendCode();
           }}
         >
           <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
