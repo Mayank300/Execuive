@@ -12,7 +12,6 @@ import {
   ScrollView,
   Platform,
   Alert,
-  Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -23,19 +22,6 @@ import * as firebase from "firebase";
 import db from "../firebase/config";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { StatusBar } from "react-native";
-
-try {
-  firebase.initializeApp({
-    apiKey: "AIzaSyAwece7RVV4qAXCVt9zjeMY4itM2kbyWv4",
-    authDomain: "executive-2021.firebaseapp.com",
-    projectId: "executive-2021",
-    storageBucket: "executive-2021.appspot.com",
-    messagingSenderId: "197300104961",
-    appId: "1:197300104961:web:c114981e1500f85d3b7500",
-  });
-} catch (err) {
-  console.log(err);
-}
 
 import { Icon } from "react-native-elements/dist/icons/Icon";
 const SignUp = ({ navigation }) => {
@@ -58,6 +44,14 @@ const SignUp = ({ navigation }) => {
     ? firebase.app().options
     : undefined;
   const attemptInvisibleVerification = false;
+
+  //  refs
+
+  const nameRef = useRef(null);
+  const mailRef = useRef(null);
+  const numberRef = useRef(null);
+  const passwordRef = useRef(null);
+  const otpRef = useRef(null);
 
   React.useEffect(() => {
     fetch("https://restcountries.eu/rest/v2/all")
@@ -82,6 +76,7 @@ const SignUp = ({ navigation }) => {
           }
         }
       });
+    nameRef.current.focus();
   }, []);
 
   const signUpMethod = (emailId, password) => {
@@ -95,7 +90,7 @@ const SignUp = ({ navigation }) => {
                 .auth()
                 .currentUser.sendEmailVerification()
                 .then(() => {
-                  return Alert.alert("Check Email And Verify It To Login");
+                  Alert.alert("Check Email And Verify It To Login");
                 });
               db.collection("users").add({
                 user_name: user_name,
@@ -125,6 +120,7 @@ const SignUp = ({ navigation }) => {
       setVerificationId(verificationId);
       setOtpFormVisibility(true);
       alert("Verification code has been sent to your phone.");
+      otpRef.current.focus();
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);
@@ -231,7 +227,7 @@ const SignUp = ({ navigation }) => {
           marginHorizontal: SIZES.padding * 3,
         }}
       >
-        {/* Full Name */}
+        {/* Name */}
         <View style={{ marginTop: SIZES.padding * 3 }}>
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Full Name
@@ -240,6 +236,12 @@ const SignUp = ({ navigation }) => {
             <Icon type="feather" name="user" size={28} color={COLORS.white} />
           </View>
           <TextInput
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              mailRef.current.focus();
+            }}
+            blurOnSubmit={false}
+            ref={nameRef}
             value={user_name}
             onChangeText={(user_name) => setUser_name(user_name)}
             style={{
@@ -257,6 +259,7 @@ const SignUp = ({ navigation }) => {
           />
         </View>
 
+        {/* mail Name */}
         <View style={{ marginTop: SIZES.padding * 3 }}>
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Email
@@ -265,6 +268,12 @@ const SignUp = ({ navigation }) => {
             <Icon type="feather" name="mail" size={28} color={COLORS.white} />
           </View>
           <TextInput
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              numberRef.current.focus();
+            }}
+            blurOnSubmit={false}
+            ref={mailRef}
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
             keyboardType="email-address"
@@ -283,7 +292,7 @@ const SignUp = ({ navigation }) => {
           />
         </View>
 
-        {/* Phone Number */}
+        {/* Phone Number & country code */}
         <View style={{ marginTop: SIZES.padding * 2 }}>
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
             Phone Number
@@ -341,6 +350,12 @@ const SignUp = ({ navigation }) => {
               />
             </View>
             <TextInput
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                passwordRef.current.focus();
+              }}
+              blurOnSubmit={false}
+              ref={numberRef}
               value={user_contact}
               onChangeText={(user_contact) => setUser_contact(user_contact)}
               autoCompleteType="tel"
@@ -382,6 +397,7 @@ const SignUp = ({ navigation }) => {
             </View>
           )}
           <TextInput
+            ref={passwordRef}
             value={user_password}
             onChangeText={(user_password) => setUser_password(user_password)}
             style={{
@@ -433,9 +449,15 @@ const SignUp = ({ navigation }) => {
         <View style={{ marginTop: SIZES.padding * 2 }}>
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>OTP</Text>
           <View style={{ position: "absolute", top: 35, left: 10 }}>
-            <Icon type="feather" name="phone" size={28} color={COLORS.white} />
+            <Icon
+              type="feather"
+              name="message-square"
+              size={28}
+              color={COLORS.white}
+            />
           </View>
           <TextInput
+            ref={otpRef}
             value={verificationCode}
             onChangeText={(otp) => setVerificationCode(otp)}
             keyboardType={"numeric"}
@@ -450,7 +472,7 @@ const SignUp = ({ navigation }) => {
               ...FONTS.body3,
               paddingLeft: 50,
             }}
-            placeholder="Phone Number"
+            placeholder="Enter OTP"
             placeholderTextColor={COLORS.white}
             selectionColor={COLORS.white}
           />
@@ -499,7 +521,6 @@ const SignUp = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        {otpForm()}
       </View>
     );
   }
@@ -577,6 +598,7 @@ const SignUp = ({ navigation }) => {
           {renderLogo()}
           {renderForm()}
           {renderButton()}
+          {otpFormVisibility ? otpForm() : null}
         </ScrollView>
       </LinearGradient>
       {renderAreaCodesModal()}

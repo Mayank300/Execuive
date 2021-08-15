@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,10 @@ const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [user_email, setUser_email] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
+
+  //  refs make excel sheet - quantity, name, productId,
+
+  const passwordRef = useRef(null);
 
   const login = (emailId, password) => {
     firebase
@@ -113,6 +117,11 @@ const Login = ({ navigation }) => {
             <Icon type="feather" name="mail" size={28} color={COLORS.white} />
           </View>
           <TextInput
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              passwordRef.current.focus();
+            }}
+            blurOnSubmit={false}
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
             keyboardType="email-address"
@@ -151,6 +160,7 @@ const Login = ({ navigation }) => {
             </View>
           )}
           <TextInput
+            ref={passwordRef}
             value={user_password}
             onChangeText={(user_password) => setUser_password(user_password)}
             style={{

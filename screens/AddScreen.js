@@ -11,6 +11,8 @@ import {
   ScrollView,
   TextInput,
   Platform,
+  ToastAndroid,
+  Alert,
 } from "react-native";
 import { COLORS, FONTS, SIZES, icons, images } from "../constants";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -23,7 +25,6 @@ import moment from "moment";
 import { CalendarList } from "react-native-calendars";
 import firebase from "firebase";
 import db from "../firebase/config";
-
 const Tab = createMaterialTopTabNavigator();
 
 const ScanProduct = ({ navigation }) => {
@@ -100,7 +101,9 @@ const ScanProduct = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => {}}
+          onPress={() => {
+            alert(`${scanned ? "Scanned" : "Scan Product"}`);
+          }}
         >
           <Image
             source={icons.info}
@@ -398,7 +401,11 @@ const AddProduct = () => {
       notification_title: "Product Added Successfully",
       notification_status: "unread",
     });
-    alert("Product Added Successfully");
+    {
+      Platform.OS === "ios"
+        ? Alert.alert("Product Added Successfully")
+        : ToastAndroid.show("Product Added Successfully", ToastAndroid.SHORT);
+    }
     setQuantity("");
     setTotalCost("");
     setProductName("");

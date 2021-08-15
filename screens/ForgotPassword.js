@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import React, { useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,10 +8,13 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Alert,
   StatusBar,
   StyleSheet,
   Button,
+  TouchableWithoutFeedback,
+  Modal,
+  FlatList,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
@@ -27,23 +29,96 @@ import {
 
 const ForgotPassword = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
-  const sendPasswordReset = () => {
-    if (user_email !== "") {
-      firebase
-        .auth()
-        .sendPasswordResetEmail(user_email)
-        .then(() => {
-          setUser_email("");
-          navigation.replace("Login");
-          return alert("Check registered email and change password ");
-        })
-        .catch((error) => {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          console.log(error);
+  const [user_contact, setUser_contact] = React.useState("");
+  const [otpFormVisibility, setOtpFormVisibility] = React.useState(false);
+  const [selectedArea, setSelectedArea] = React.useState(null);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [areas, setAreas] = React.useState([]);
+
+  const emailRef = useRef(null);
+  const numberRef = useRef(null);
+  const otpRef = useRef(null);
+
+  // otp Verification
+
+  const recaptchaVerifier = React.useRef(null);
+  const [verificationId, setVerificationId] = React.useState();
+  const [verificationCode, setVerificationCode] = React.useState();
+  const firebaseConfig = firebase.apps.length
+    ? firebase.app().options
+    : undefined;
+  const attemptInvisibleVerification = false;
+
+  React.useEffect(() => {
+    fetch("https://restcountries.eu/rest/v2/all")
+      .then((response) => response.json())
+      .then((data) => {
+        let areaData = data.map((item) => {
+          return {
+            code: item.alpha2Code,
+            name: item.name,
+            callingCode: `+${item.callingCodes[0]}`,
+            flag: `https://www.countryflags.io/${item.alpha2Code}/flat/64.png`,
+          };
         });
-    } else {
-      return alert("Invalid Email ID");
+
+        setAreas(areaData);
+
+        if (areaData.length > 0) {
+          let defaultData = areaData.filter((a) => a.code == "IN");
+
+          if (defaultData.length > 0) {
+            setSelectedArea(defaultData[0]);
+          }
+        }
+      });
+    emailRef.current.focus();
+  }, []);
+
+  const sendPasswordReset = () => {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(user_email)
+      .then(() => {
+        setUser_email("");
+        navigation.replace("Login");
+        return alert("Check registered email and change password ");
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(error);
+      });
+  };
+
+  const handleSendCode = async () => {
+    try {
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        `${selectedArea.callingCode}` + user_contact,
+        recaptchaVerifier.current
+      );
+      setVerificationId(verificationId);
+      setOtpFormVisibility(true);
+      alert("Verification code has been sent to your phone.");
+      otpRef.current.focus();
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+      alert(err.message);
+    }
+  };
+
+  const handleConfirmSendCode = async () => {
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(
+        verificationId,
+        verificationCode
+      );
+      await firebase.auth().signInWithCredential(credential);
+      sendPasswordReset();
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+      alert(err.message);
     }
   };
 
@@ -133,14 +208,21 @@ const ForgotPassword = ({ navigation }) => {
           marginHorizontal: SIZES.padding * 3,
         }}
       >
+        {/* email */}
         <View style={{ marginTop: SIZES.padding * 3 }}>
           <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
-            Email
+            Registered Email
           </Text>
-          <View style={{ position: "absolute", top: 40, left: 5 }}>
+          <View style={{ position: "absolute", top: 35, left: 5 }}>
             <Icon type="feather" name="mail" size={28} color={COLORS.white} />
           </View>
           <TextInput
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              numberRef.current.focus();
+            }}
+            blurOnSubmit={false}
+            ref={emailRef}
             value={user_email}
             onChangeText={(user_email) => setUser_email(user_email)}
             keyboardType="email-address"
@@ -158,6 +240,147 @@ const ForgotPassword = ({ navigation }) => {
             selectionColor={COLORS.white}
           />
         </View>
+
+        {/* Phone Number & country code */}
+        <View style={{ marginTop: SIZES.padding * 2 }}>
+          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
+            Registered Phone Number
+          </Text>
+
+          <View style={{ flexDirection: "row" }}>
+            {/* Country Code */}
+            <TouchableOpacity
+              style={{
+                width: 100,
+                height: 50,
+                marginHorizontal: 5,
+                borderBottomColor: COLORS.white,
+                borderBottomWidth: 1,
+                flexDirection: "row",
+                ...FONTS.body2,
+              }}
+              onPress={() => setModalVisible(true)}
+            >
+              <View style={{ justifyContent: "center" }}>
+                <Image
+                  source={icons.down}
+                  style={{
+                    width: 10,
+                    height: 10,
+                    tintColor: COLORS.white,
+                  }}
+                />
+              </View>
+              <View style={{ justifyContent: "center", marginLeft: 5 }}>
+                <Image
+                  source={{ uri: selectedArea?.flag }}
+                  resizeMode="contain"
+                  style={{
+                    width: 30,
+                    height: 30,
+                  }}
+                />
+              </View>
+
+              <View style={{ justifyContent: "center", marginLeft: 5 }}>
+                <Text style={{ color: COLORS.white, ...FONTS.body3 }}>
+                  {selectedArea?.callingCode}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Phone Number */}
+            <View style={{ position: "absolute", top: 10, left: 120 }}>
+              <Icon
+                type="feather"
+                name="phone"
+                size={28}
+                color={COLORS.white}
+              />
+            </View>
+            <TextInput
+              returnKeyType="next"
+              ref={numberRef}
+              value={user_contact}
+              onChangeText={(user_contact) => setUser_contact(user_contact)}
+              autoCompleteType="tel"
+              keyboardType="phone-pad"
+              style={{
+                flex: 1,
+                marginVertical: SIZES.padding,
+                borderBottomColor: COLORS.white,
+                borderBottomWidth: 1,
+                height: 40,
+                color: COLORS.white,
+                ...FONTS.body3,
+                paddingLeft: 50,
+              }}
+              placeholder="Phone Number"
+              placeholderTextColor={COLORS.white}
+              selectionColor={COLORS.white}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  function otpForm() {
+    return (
+      <View
+        style={{
+          marginTop: SIZES.padding - 25,
+          marginHorizontal: SIZES.padding * 3,
+        }}
+      >
+        <View style={{ marginTop: SIZES.padding * 2 }}>
+          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>OTP</Text>
+          <View style={{ position: "absolute", top: 35, left: 10 }}>
+            <Icon
+              type="feather"
+              name="message-square"
+              size={28}
+              color={COLORS.white}
+            />
+          </View>
+          <TextInput
+            ref={otpRef}
+            value={verificationCode}
+            onChangeText={(otp) => setVerificationCode(otp)}
+            keyboardType={"numeric"}
+            editable={!!verificationId}
+            style={{
+              flex: 1,
+              marginVertical: SIZES.padding,
+              borderBottomColor: COLORS.white,
+              borderBottomWidth: 1,
+              height: 40,
+              color: COLORS.white,
+              ...FONTS.body3,
+              paddingLeft: 50,
+            }}
+            placeholder="Enter OTP"
+            placeholderTextColor={COLORS.white}
+            selectionColor={COLORS.white}
+          />
+        </View>
+
+        <View style={{ marginBottom: 50, marginTop: SIZES.padding * 3 }}>
+          <TouchableOpacity
+            style={{
+              height: 60,
+              backgroundColor: COLORS.black,
+              borderRadius: SIZES.radius / 1.5,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              handleConfirmSendCode();
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Next</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -174,7 +397,13 @@ const ForgotPassword = ({ navigation }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            sendPasswordReset();
+            const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+            if (reg.test(user_email) === true) {
+              handleSendCode();
+            } else {
+              alert("Email baddly formatted");
+            }
           }}
         >
           <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Verify</Text>
@@ -183,11 +412,70 @@ const ForgotPassword = ({ navigation }) => {
     );
   }
 
+  function renderAreaCodesModal() {
+    const renderItem = ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{ padding: SIZES.padding, flexDirection: "row" }}
+          onPress={() => {
+            setSelectedArea(item);
+            setModalVisible(false);
+          }}
+        >
+          <Image
+            source={{ uri: item.flag }}
+            style={{
+              width: 30,
+              height: 30,
+              marginRight: 10,
+            }}
+          />
+          <Text style={{ ...FONTS.body4 }}>{item.name}</Text>
+        </TouchableOpacity>
+      );
+    };
+
+    return (
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <View
+              style={{
+                height: 400,
+                width: SIZES.width * 0.8,
+                backgroundColor: COLORS.lightGreen,
+                borderRadius: SIZES.radius,
+              }}
+            >
+              <FlatList
+                data={areas}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.code}
+                showsVerticalScrollIndicator={false}
+                style={{
+                  padding: SIZES.padding * 2,
+                  marginBottom: SIZES.padding * 2,
+                }}
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : null}
       style={{ flex: 1 }}
     >
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+        attemptInvisibleVerification={attemptInvisibleVerification}
+      />
       <LinearGradient
         colors={[COLORS.lime, COLORS.emerald]}
         style={{ flex: 1 }}
@@ -197,8 +485,10 @@ const ForgotPassword = ({ navigation }) => {
           {renderLogo()}
           {renderForm()}
           {renderButton()}
+          {otpFormVisibility ? otpForm() : null}
         </ScrollView>
       </LinearGradient>
+      {renderAreaCodesModal()}
     </KeyboardAvoidingView>
   );
 };

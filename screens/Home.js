@@ -9,6 +9,8 @@ import {
   TouchableWithoutFeedback,
   Modal,
   StyleSheet,
+  Platform,
+  Alert,
 } from "react-native";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Icon, Avatar } from "react-native-elements";

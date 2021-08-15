@@ -17,6 +17,7 @@ import { COLORS, FONTS, icons, SIZES } from "../constants";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Title, Caption, Text, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native";
+import { sendEmail } from "../mail/sendEmail";
 
 const SettingsScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -222,6 +223,14 @@ const SettingsScreen = ({ navigation }) => {
     );
   };
 
+  const sendMail = () => {
+    sendEmail("mratre300@gmail.com", "My feedback for your app!", "...").then(
+      () => {
+        alert("Your message was successfully sent!");
+      }
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.userInfoSection}>
@@ -403,31 +412,6 @@ const SettingsScreen = ({ navigation }) => {
                 style={[
                   styles.iconContainer,
                   {
-                    backgroundColor: COLORS.lightyellow,
-                  },
-                ]}
-              >
-                <Image
-                  source={icons.bill}
-                  resizeMode="contain"
-                  style={[
-                    styles.icon,
-                    {
-                      tintColor: COLORS.yellow,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.menuItemText}>Manage Products</Text>
-            </View>
-          </TouchableRipple>
-
-          <TouchableRipple onPress={() => {}}>
-            <View style={styles.menuItem}>
-              <View
-                style={[
-                  styles.iconContainer,
-                  {
                     backgroundColor: COLORS.lightGreen,
                   },
                 ]}
@@ -472,6 +456,36 @@ const SettingsScreen = ({ navigation }) => {
                 />
               </View>
               <Text style={styles.menuItemText}>Logout</Text>
+            </View>
+          </TouchableRipple>
+
+          <TouchableRipple
+            onPress={() => {
+              sendMail();
+            }}
+          >
+            <View style={styles.menuItem}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  {
+                    backgroundColor: COLORS.lightyellow,
+                  },
+                ]}
+              >
+                <Icon
+                  type="font-awesome"
+                  name="share"
+                  color="#FFC664"
+                  style={{
+                    height: 30,
+                    width: 30,
+                    marginTop: 5,
+                    marginLeft: 5,
+                  }}
+                />
+              </View>
+              <Text style={styles.menuItemText}>Send Feedback</Text>
             </View>
           </TouchableRipple>
 
