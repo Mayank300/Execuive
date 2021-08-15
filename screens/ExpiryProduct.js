@@ -21,7 +21,8 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Blink from "../components/Blink";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
 import { Icon } from "react-native-elements/dist/icons/Icon";
-
+// import CodePush from "react-native-code-push";
+// import RNRestart from "react-native-restart";
 export default class ExpiryProduct extends Component {
   constructor(props) {
     super(props);
@@ -84,6 +85,8 @@ export default class ExpiryProduct extends Component {
       this.setState({
         refreshing: false,
       });
+      // CodePush.restartApp();
+      // RNRestart.Restart();
     }, 2000);
   }
 

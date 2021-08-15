@@ -90,7 +90,7 @@ const Home = ({ navigation }) => {
       >
         <StatusBar hidden />
         <View style={{ flex: 1 }}>
-          <Text style={{ ...FONTS.h1 }}>Hello!</Text>
+          <Text style={{ ...FONTS.h1 }}>Welcome!</Text>
           <Text style={{ ...FONTS.body2, color: COLORS.gray, marginLeft: 12 }}>
             {name === "" ? "Loading..." : <Text>{name}</Text>}
           </Text>
@@ -139,7 +139,7 @@ const Home = ({ navigation }) => {
                 rounded
                 source={require("../assets/images/edit.png")}
                 size="medium"
-                onPress={() => navigation.navigate("Profile")}
+                onPress={() => alert("Change profile pic in settings")}
                 containerStyle={{
                   imageContainer: {
                     flex: 0.75,

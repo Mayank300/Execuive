@@ -276,10 +276,10 @@ const SettingsScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <Icon
-            type="feather"
+            type="font-awesome"
             name="share"
             onPress={() => onShare()}
-            style={{ position: "absoulte", top: 10, right: 0 }}
+            style={{ position: "absoulte", top: 10 }}
           />
         </View>
       </View>

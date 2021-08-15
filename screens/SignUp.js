@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
@@ -15,10 +15,27 @@ import {
   Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import firebase from "firebase";
+import {
+  FirebaseRecaptchaVerifierModal,
+  FirebaseRecaptchaBanner,
+} from "expo-firebase-recaptcha";
+import * as firebase from "firebase";
 import db from "../firebase/config";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { StatusBar } from "react-native";
+
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyAwece7RVV4qAXCVt9zjeMY4itM2kbyWv4",
+    authDomain: "executive-2021.firebaseapp.com",
+    projectId: "executive-2021",
+    storageBucket: "executive-2021.appspot.com",
+    messagingSenderId: "197300104961",
+    appId: "1:197300104961:web:c114981e1500f85d3b7500",
+  });
+} catch (err) {
+  console.log(err);
+}
 
 import { Icon } from "react-native-elements/dist/icons/Icon";
 const SignUp = ({ navigation }) => {
@@ -30,7 +47,17 @@ const SignUp = ({ navigation }) => {
   const [user_email, setUser_email] = React.useState("");
   const [user_contact, setUser_contact] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
-  const [confirmResult, setConfirmResult] = React.useState(null);
+  const [otpFormVisibility, setOtpFormVisibility] = React.useState(false);
+
+  // otp Verification
+
+  const recaptchaVerifier = React.useRef(null);
+  const [verificationId, setVerificationId] = React.useState();
+  const [verificationCode, setVerificationCode] = React.useState();
+  const firebaseConfig = firebase.apps.length
+    ? firebase.app().options
+    : undefined;
+  const attemptInvisibleVerification = false;
 
   React.useEffect(() => {
     fetch("https://restcountries.eu/rest/v2/all")
@@ -88,25 +115,33 @@ const SignUp = ({ navigation }) => {
     }
   };
 
-  const handleSendCode = () => {
-    if (
-      // user_contact.length === 10 &&
-      user_name !== ""
-    ) {
-      firebase
-        .auth()
-        .signInWithPhoneNumber(user_contact)
-        .then((confirmResult) => {
-          setConfirmResult(confirmResult);
-          console.log("success");
-          // signUpMethod(user_email, user_password);
-        })
-        .catch((error) => {
-          alert(error.message);
-          console.log(error);
-        });
-    } else {
-      alert("Invalid Phone Number");
+  const handleSendCode = async () => {
+    try {
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const verificationId = await phoneProvider.verifyPhoneNumber(
+        `${selectedArea.callingCode}` + user_contact,
+        recaptchaVerifier.current
+      );
+      setVerificationId(verificationId);
+      setOtpFormVisibility(true);
+      alert("Verification code has been sent to your phone.");
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+      alert(err.message);
+    }
+  };
+
+  const handleConfirmSendCode = async () => {
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(
+        verificationId,
+        verificationCode
+      );
+      await firebase.auth().signInWithCredential(credential);
+      signUpMethod(user_email, user_password);
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+      alert(err.message);
     }
   };
 
@@ -308,7 +343,8 @@ const SignUp = ({ navigation }) => {
             <TextInput
               value={user_contact}
               onChangeText={(user_contact) => setUser_contact(user_contact)}
-              keyboardType={"numeric"}
+              autoCompleteType="tel"
+              keyboardType="phone-pad"
               style={{
                 flex: 1,
                 marginVertical: SIZES.padding,
@@ -386,25 +422,84 @@ const SignUp = ({ navigation }) => {
     );
   }
 
+  function otpForm() {
+    return (
+      <View
+        style={{
+          marginTop: SIZES.padding - 25,
+          marginHorizontal: SIZES.padding * 3,
+        }}
+      >
+        <View style={{ marginTop: SIZES.padding * 2 }}>
+          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>OTP</Text>
+          <View style={{ position: "absolute", top: 35, left: 10 }}>
+            <Icon type="feather" name="phone" size={28} color={COLORS.white} />
+          </View>
+          <TextInput
+            value={verificationCode}
+            onChangeText={(otp) => setVerificationCode(otp)}
+            keyboardType={"numeric"}
+            editable={!!verificationId}
+            style={{
+              flex: 1,
+              marginVertical: SIZES.padding,
+              borderBottomColor: COLORS.white,
+              borderBottomWidth: 1,
+              height: 40,
+              color: COLORS.white,
+              ...FONTS.body3,
+              paddingLeft: 50,
+            }}
+            placeholder="Phone Number"
+            placeholderTextColor={COLORS.white}
+            selectionColor={COLORS.white}
+          />
+        </View>
+
+        <View style={{ marginBottom: 50, marginTop: SIZES.padding * 3 }}>
+          <TouchableOpacity
+            style={{
+              height: 60,
+              backgroundColor: COLORS.black,
+              borderRadius: SIZES.radius / 1.5,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              handleConfirmSendCode();
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
+              Create Account
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   function renderButton() {
     return (
-      <View style={{ margin: SIZES.padding * 3 }}>
-        <TouchableOpacity
-          style={{
-            height: 60,
-            backgroundColor: COLORS.black,
-            borderRadius: SIZES.radius / 1.5,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={() => {
-            handleSendCode();
-          }}
-        >
-          <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
-            Create Account
-          </Text>
-        </TouchableOpacity>
+      <View>
+        <View style={{ margin: SIZES.padding * 3 }}>
+          <TouchableOpacity
+            style={{
+              height: 60,
+              backgroundColor: COLORS.black,
+              borderRadius: SIZES.radius / 1.5,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onPress={() => {
+              handleSendCode();
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
+              Verify Account
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {otpForm()}
       </View>
     );
   }
@@ -468,6 +563,11 @@ const SignUp = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : null}
       style={{ flex: 1 }}
     >
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+        attemptInvisibleVerification={attemptInvisibleVerification}
+      />
       <LinearGradient
         colors={[COLORS.lime, COLORS.emerald]}
         style={{ flex: 1 }}
