@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,8 +11,6 @@ import {
   ScrollView,
   TextInput,
   Platform,
-  ToastAndroid,
-  Alert,
 } from "react-native";
 import { COLORS, FONTS, SIZES, icons, images } from "../constants";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -20,18 +18,19 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
-import * as ImagePicker from "expo-image-picker";
 import moment from "moment";
 import { CalendarList } from "react-native-calendars";
 import firebase from "firebase";
 import db from "../firebase/config";
 const Tab = createMaterialTopTabNavigator();
+import ToastAnimation from "../components/ToastAnimation";
 
 const ScanProduct = ({ navigation }) => {
   const [hasPermission, setHasPermission] = React.useState(null);
   const [scanned, setScanned] = React.useState(false);
   const [data, setData] = React.useState("");
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [messages, setMessages] = useState([]);
 
   React.useEffect(() => {
     (async () => {
@@ -53,7 +52,8 @@ const ScanProduct = ({ navigation }) => {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert("Bar code scanned successfully !");
+    const message = "Bar code scanned successfully !";
+    setMessages([...messages, message]);
     setData(data);
   };
 
@@ -102,7 +102,8 @@ const ScanProduct = ({ navigation }) => {
             justifyContent: "center",
           }}
           onPress={() => {
-            alert(`${scanned ? "Scanned" : "Scan Product"}`);
+            const message = `${scanned ? "Scanned" : "Scan Product"}`;
+            setMessages([...messages, message]);
           }}
         >
           <Image
@@ -254,6 +255,26 @@ const ScanProduct = ({ navigation }) => {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
+      <View
+        style={{
+          position: "absolute",
+          top: 25,
+          left: 0,
+          right: 0,
+        }}
+      >
+        {messages.map((message) => (
+          <ToastAnimation
+            key={message}
+            message={message}
+            onHide={() => {
+              setMessages((messages) =>
+                messages.filter((currentMessage) => currentMessage !== message)
+              );
+            }}
+          />
+        ))}
+      </View>
       {renderHeader()}
       {renderScanFocus()}
       {detailsTab()}
@@ -352,6 +373,10 @@ const ScanProduct = ({ navigation }) => {
 };
 
 const AddProduct = () => {
+  useEffect(() => {
+    nameRef.current.focus();
+  }, []);
+
   const [quantity, setQuantity] = React.useState("");
   const [totalCost, setTotalCost] = React.useState("");
   const [productName, setProductName] = React.useState("");
@@ -363,7 +388,6 @@ const AddProduct = () => {
       "," +
       Math.floor(Math.random() * Math.floor(256))
   );
-
   const [currentDay, setCurrentDay] = React.useState(
     `${moment().format("YYYY")}-${moment().format("MM")}-${moment().format(
       "DD"
@@ -377,6 +401,12 @@ const AddProduct = () => {
       selectedColor: "#2E66E7",
     },
   });
+  // animated toast
+  const [messages, setMessages] = useState([]);
+  // ref
+  const nameRef = useRef();
+  const quantityRef = useRef();
+  const costRef = useRef();
 
   const addProduct = () => {
     var userId = firebase.auth().currentUser.email;
@@ -391,6 +421,7 @@ const AddProduct = () => {
       user_id: userId,
       product_color: color,
       date_added: dateAdded,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
     db.collection("notifications").add({
       id: Math.random().toString(36).substring(7),
@@ -400,12 +431,21 @@ const AddProduct = () => {
       product_name: productName,
       notification_title: "Product Added Successfully",
       notification_status: "unread",
+      date_added: dateAdded,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
-    {
-      Platform.OS === "ios"
-        ? Alert.alert("Product Added Successfully")
-        : ToastAndroid.show("Product Added Successfully", ToastAndroid.SHORT);
-    }
+    db.collection("activities").add({
+      id: Math.random().toString(36).substring(7),
+      exp_date: currentDay,
+      product_color: color,
+      user_id: userId,
+      product_name: productName,
+      title: `was added on ${dateAdded}`,
+      date_added: dateAdded,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    const message = "Product Added Successfully";
+    setMessages([...messages, message]);
     setQuantity("");
     setTotalCost("");
     setProductName("");
@@ -537,6 +577,12 @@ const AddProduct = () => {
               />
             </View>
             <TextInput
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                quantityRef.current.focus();
+              }}
+              blurOnSubmit={false}
+              ref={nameRef}
               value={productName}
               onChangeText={(text) => setProductName(text)}
               style={styles.textInput}
@@ -546,6 +592,7 @@ const AddProduct = () => {
             />
           </View>
         </View>
+
         {/* quantity */}
         <View
           style={{
@@ -566,6 +613,12 @@ const AddProduct = () => {
               />
             </View>
             <TextInput
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                costRef.current.focus();
+              }}
+              blurOnSubmit={false}
+              ref={quantityRef}
               value={quantity}
               onChangeText={(text) => setQuantity(text)}
               keyboardType={"numeric"}
@@ -576,6 +629,7 @@ const AddProduct = () => {
             />
           </View>
         </View>
+
         {/* cost */}
         <View
           style={{
@@ -596,6 +650,7 @@ const AddProduct = () => {
               />
             </View>
             <TextInput
+              ref={costRef}
               value={totalCost}
               onChangeText={(text) => setTotalCost(text)}
               keyboardType={"numeric"}
@@ -606,6 +661,7 @@ const AddProduct = () => {
             />
           </View>
         </View>
+
         {/* expiry day */}
         <View
           style={{
@@ -643,8 +699,29 @@ const AddProduct = () => {
       </View>
     );
   };
+
   return (
     <View>
+      <View
+        style={{
+          position: "absolute",
+          top: 25,
+          left: 0,
+          right: 0,
+        }}
+      >
+        {messages.map((message) => (
+          <ToastAnimation
+            key={message}
+            message={message}
+            onHide={() => {
+              setMessages((messages) =>
+                messages.filter((currentMessage) => currentMessage !== message)
+              );
+            }}
+          />
+        ))}
+      </View>
       {modalVisible ? daySelector() : null}
       <ScrollView>{form()}</ScrollView>
     </View>

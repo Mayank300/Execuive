@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   FlatList,
   Platform,
+  Alert,
   Modal,
   TextInput,
-  Alert,
+  ScrollView,
 } from "react-native";
 import moment from "moment";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
@@ -18,8 +19,7 @@ import { SearchBar } from "react-native-elements";
 import * as Animated from "react-native-animatable";
 import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
-import LottieView from "lottie-react-native";
-import { Icon } from "react-native-elements/dist/icons/Icon";
+import { Icon } from "react-native-elements";
 
 export default class ProductList extends React.Component {
   constructor(props) {
@@ -31,6 +31,11 @@ export default class ProductList extends React.Component {
         "MM"
       )}-${moment().format("DD")}`,
       search: "",
+      showModal: false,
+      product_name: "",
+      cost: "",
+      quantity: "",
+      doc_id: "",
     };
     this.productRef = null;
   }
@@ -40,24 +45,11 @@ export default class ProductList extends React.Component {
   }
 
   getProductList = () => {
-    // var today = new Date();
-    // var dd = String(today.getDate()).padStart(2, "0");
-    // var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-    // var yyyy = today.getFullYear();
-    // today = yyyy + "-" + mm + "-" + dd;
-    // var filteredDate = today;
-
-    // var date = moment(filteredDate).isAfter("2020-09-09", "year"); // false
-
-    // let date = new Date();
-    // date.setDate(date.getDate() + 10);
-
     var email = firebase.auth().currentUser.email;
     this.productRef = db
       .collection("products")
       .where("user_id", "==", email)
-      // .where("exp_date", ">", date)
-      // .where("exp_date", "<", date)
+      .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) => {
         var DATA = [];
         snapshot.docs.map((doc) => {
@@ -116,6 +108,20 @@ export default class ProductList extends React.Component {
     });
   };
 
+  updateProduct = () => {
+    db.collection("products").doc(this.state.doc_id).update({
+      total_cost: this.state.cost,
+      product_name: this.state.product_name,
+      quantity: this.state.quantity,
+    });
+    this.setState({
+      total_cost: "",
+      product_name: "",
+      quantity: "",
+      doc_id: "",
+    });
+  };
+
   showAlert = (item) => {
     return Alert.alert(`${item.product_name}`, `Expires on ${item.exp_date}`, [
       {
@@ -143,6 +149,157 @@ export default class ProductList extends React.Component {
         style: "cancel",
       },
     ]);
+  };
+
+  showEditModal = (item) => {
+    return (
+      <Modal
+        // animationType="slide"
+        transparent={true}
+        visible={this.state.showModal}
+      >
+        <View
+          style={[
+            styles.modalContainer,
+            {
+              paddingTop: windowHeight / 4,
+              backgroundColor: "rgba(0,0,0,0.2)",
+              height: windowHeight,
+            },
+          ]}
+        >
+          <ScrollView>
+            <View style={styles.taskContainer}>
+              <ScrollView>
+                <View style={styles.ModalHead}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#000",
+                        fontSize: 16,
+                        fontWeight: "600",
+                        marginBottom: 10,
+                      }}
+                    >
+                      Product Name
+                    </Text>
+                    <Icon
+                      onPress={() => this.setState({ showModal: false })}
+                      type="feather"
+                      name="x"
+                      size={30}
+                    />
+                  </View>
+                  <TextInput
+                    style={[
+                      styles.title,
+                      { borderColor: `rgb(${item.product_color})` },
+                    ]}
+                    value={this.state.product_name}
+                    onChangeText={(name) =>
+                      this.setState({ product_name: name })
+                    }
+                  />
+                </View>
+
+                <View style={styles.notesContent} />
+                <View>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: 16,
+                      fontWeight: "600",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Cost
+                  </Text>
+                  <TextInput
+                    style={[
+                      styles.title,
+                      { borderColor: `rgb(${item.product_color})` },
+                    ]}
+                    value={this.state.cost}
+                    onChangeText={(cost) => this.setState({ cost: cost })}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.sepeerator} />
+                <View>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: 16,
+                      fontWeight: "600",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Quantity
+                  </Text>
+
+                  <TextInput
+                    style={[
+                      styles.title,
+                      { borderColor: `rgb(${item.product_color})` },
+                    ]}
+                    value={this.state.quantity}
+                    onChangeText={(quantity) =>
+                      this.setState({ quantity: quantity })
+                    }
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={styles.sepeerator} />
+                <View>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: 16,
+                      fontWeight: "600",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Expiry Date
+                  </Text>
+                  <TextInput
+                    editable={false}
+                    selectTextOnFocus={false}
+                    style={[
+                      styles.title,
+                      { borderColor: `rgb(${item.product_color})` },
+                    ]}
+                    value={item.exp_date}
+                  />
+                </View>
+
+                <View
+                  style={[
+                    styles.modalFoot,
+                    { justifyContent: "center", marginHorizontal: 20 },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.updateProduct(item.doc_id);
+                      this.setState({
+                        showModal: false,
+                      });
+                    }}
+                  >
+                    <Icon type="feather" name="check" size={35} />
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+    );
   };
 
   componentWillUnmount() {
@@ -188,14 +345,15 @@ export default class ProductList extends React.Component {
               </Animated.View>
             </View>
 
-            <Animated.View animation="fadeInUpBig" duration={1500}>
-              <View style={{ height: windowHeight, paddingBottom: 125 }}>
+            <Animated.View animation="bounceInUp" duration={1100}>
+              <View style={{ height: windowHeight, paddingBottom: 160 }}>
                 <FlatList
                   keyExtractor={this.keyExtractor}
                   data={this.state.filterProductList}
                   renderItem={({ item, i }) => {
                     return (
                       <View styles={styles.container}>
+                        {this.showEditModal(item)}
                         <TouchableOpacity
                           onPress={() => this.showAlert(item)}
                           key={i}
@@ -204,6 +362,7 @@ export default class ProductList extends React.Component {
                           <View
                             style={{
                               marginLeft: 13,
+                              width: windowWidth / 1.5,
                             }}
                           >
                             <View
@@ -228,6 +387,7 @@ export default class ProductList extends React.Component {
                                   fontSize: 20,
                                   fontWeight: "700",
                                 }}
+                                numberOfLines={1}
                               >
                                 {item.product_name}
                               </Text>
@@ -259,15 +419,33 @@ export default class ProductList extends React.Component {
                               </View>
                             </View>
                           </View>
-                          <View
-                            style={{
-                              height: 80,
-                              width: 5,
-                              backgroundColor: `rgb(${item.product_color})`,
-                              borderRadius: 5,
-                              marginHorizontal: 10,
-                            }}
-                          />
+                          <View style={{ flexDirection: "row" }}>
+                            <Icon
+                              type="feather"
+                              name="edit"
+                              size={25}
+                              style={{ marginRight: 12, marginTop: 10 }}
+                              onPress={() => {
+                                this.setState({
+                                  showModal: true,
+                                  product_name: item.product_name,
+                                  cost: item.total_cost,
+                                  quantity: item.quantity,
+                                  doc_id: item.doc_id,
+                                });
+                              }}
+                              color={`rgb(${item.product_color})`}
+                            />
+                            <View
+                              style={{
+                                height: 80,
+                                width: 5,
+                                backgroundColor: `rgb(${item.product_color})`,
+                                borderRadius: 5,
+                                marginHorizontal: 10,
+                              }}
+                            />
+                          </View>
                         </TouchableOpacity>
                       </View>
                     );
@@ -317,37 +495,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  ModalHead: {
-    flexDirection: "column",
-  },
-  modalCardContainer: {
-    flex: 1,
-    width: windowWidth,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  viewMoreVert: {
-    position: "absolute",
-    bottom: 60,
-    right: 17,
-    height: 60,
-    width: 60,
-    backgroundColor: "#2E66E7",
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#2E66E7",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowRadius: 30,
-    shadowOpacity: 0.5,
-    elevation: 5,
-    zIndex: 999,
-  },
   viewMoreIcon: {
     height: 60,
     width: 60,
@@ -355,13 +502,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#2E66E7",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowRadius: 30,
-    shadowOpacity: 0.5,
     elevation: 5,
   },
   viewMoreContainer: {
@@ -489,13 +629,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
     elevation: 5,
   },
   button: {
@@ -517,5 +650,60 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center",
+  },
+  // modal
+
+  modalcontainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+  },
+  taskContainer: {
+    height: windowHeight / 2,
+    width: windowWidth / 1.3,
+    alignSelf: "center",
+    borderRadius: 20,
+    shadowColor: "#2E66E7",
+    backgroundColor: "#ffffff",
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowRadius: 20,
+    shadowOpacity: 0.2,
+    elevation: 5,
+    padding: 22,
+  },
+  ModalHead: {
+    flexDirection: "column",
+  },
+  modalFoot: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 30,
+  },
+  sepeerator: {
+    height: 0.5,
+    width: "100%",
+    backgroundColor: "#979797",
+    alignSelf: "center",
+    marginVertical: 20,
+  },
+  notesContent: {
+    height: 0.5,
+    width: "100%",
+    backgroundColor: "#979797",
+    alignSelf: "center",
+    marginVertical: 20,
+  },
+  title: {
+    height: 25,
+    borderColor: "#5DD976",
+    borderLeftWidth: 3,
+    paddingLeft: 13,
+    fontSize: 19,
+    color: "gray",
   },
 });

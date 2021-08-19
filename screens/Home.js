@@ -9,8 +9,6 @@ import {
   TouchableWithoutFeedback,
   Modal,
   StyleSheet,
-  Platform,
-  Alert,
 } from "react-native";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { Icon, Avatar } from "react-native-elements";
@@ -22,6 +20,9 @@ import { DrawerActions } from "@react-navigation/native";
 import moment from "moment";
 import { ActivityIndicator } from "react-native";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
+// import { useIsFocused } from "@react-navigation/native";
+
+import ToastAnimation from "../components/ToastAnimation";
 
 const Home = ({ navigation }) => {
   const [name, setName] = React.useState("");
@@ -29,6 +30,9 @@ const Home = ({ navigation }) => {
   const [docId, setDocId] = React.useState("");
   const [allNotifications, setAllNotifications] = React.useState([]);
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [messages, setMessages] = React.useState([]);
+
+  // const isFocused = useIsFocused();
 
   useEffect(() => {
     getUserDetails();
@@ -141,7 +145,10 @@ const Home = ({ navigation }) => {
                 rounded
                 source={require("../assets/images/edit.png")}
                 size="medium"
-                onPress={() => alert("Change profile pic in settings")}
+                onPress={() => {
+                  const message = "Change profile pic in settings";
+                  setMessages([...messages, message]);
+                }}
                 containerStyle={{
                   imageContainer: {
                     flex: 0.75,
@@ -158,7 +165,9 @@ const Home = ({ navigation }) => {
                   uri: image,
                 }}
                 size="medium"
-                onPress={() => setModalVisible(!modalVisible)}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                }}
                 containerStyle={{
                   imageContainer: {
                     flex: 0.75,
@@ -258,7 +267,7 @@ const Home = ({ navigation }) => {
               Bill
             </Text>
           </TouchableOpacity>
-          {/* shelf */}
+          {/* MyActivities */}
           <TouchableOpacity
             style={{
               marginBottom: SIZES.padding * 2,
@@ -266,7 +275,7 @@ const Home = ({ navigation }) => {
               alignItems: "center",
             }}
             onPress={() => {
-              console.log("pressed");
+              navigation.navigate("MyActivities");
             }}
           >
             <View
@@ -280,20 +289,12 @@ const Home = ({ navigation }) => {
                 justifyContent: "center",
               }}
             >
-              <Image
-                source={icons.shelf}
-                resizeMode="contain"
-                style={{
-                  height: 22,
-                  width: 22,
-                  tintColor: COLORS.green,
-                }}
-              />
+              <Icon type="feather" name="activity" color="#66D59A" size={30} />
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
             >
-              Shelves
+              Activities
             </Text>
           </TouchableOpacity>
           {/* graph */}
@@ -355,8 +356,8 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.modalContainer}>
-          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={styles.modalContainer}>
             <View style={styles.modalSubContainer}>
               <Image
                 source={{
@@ -365,13 +366,33 @@ const Home = ({ navigation }) => {
                 style={styles.image}
               />
             </View>
-          </TouchableWithoutFeedback>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
       <ExpiryProduct
         renderHeader={renderHeader()}
         renderFeatures={renderFeatures()}
       />
+      <View
+        style={{
+          position: "absolute",
+          top: 45,
+          left: 0,
+          right: 0,
+        }}
+      >
+        {messages.map((message) => (
+          <ToastAnimation
+            key={message}
+            message={message}
+            onHide={() => {
+              setMessages((messages) =>
+                messages.filter((currentMessage) => currentMessage !== message)
+              );
+            }}
+          />
+        ))}
+      </View>
     </SafeAreaView>
   );
 };

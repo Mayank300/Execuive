@@ -45,8 +45,8 @@ const DATA = [
   },
   {
     id: "4",
-    title: "Product OutDated",
-    subTitle: "Total Product\nOutDated",
+    title: "Product Consumed",
+    subTitle: "Total Product\nConsumed",
     poster:
       "https://images.unsplash.com/photo-1515542706656-8e6ef17a1521?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
   },

@@ -8,8 +8,10 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 const { width, height } = Dimensions.get("screen");
+import NetInfo from "@react-native-community/netinfo";
 
 import firebase from "firebase";
 
@@ -123,12 +125,16 @@ const Square = ({ scrollX }) => {
 export default function OnboardingScreen({ navigation }) {
   React.useEffect(() => {
     checkIfLoggedIn();
-  });
+  }, []);
 
   function checkIfLoggedIn() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        navigation.replace("Home");
+        {
+          user.emailVerified
+            ? navigation.replace("Home")
+            : navigation.replace("Login");
+        }
       } else {
         return null;
       }
@@ -138,77 +144,79 @@ export default function OnboardingScreen({ navigation }) {
   const scrollX = React.useRef(new Animated.Value(0)).current;
   return (
     <View style={styles.container}>
-      <StatusBar hidden />
-      <Backdrop scrollX={scrollX} />
-      <Square scrollX={scrollX} />
-      <Animated.FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={DATA}
-        scrollEventThrottle={32}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        keyExtractor={(item) => item.key}
-        pagingEnabled
-        renderItem={({ item }) => {
-          return (
-            <View
-              style={{
-                width: width,
-                padding: 20,
-                alignItems: "center",
-              }}
-            >
+      <View style={styles.container}>
+        <StatusBar hidden />
+        <Backdrop scrollX={scrollX} />
+        <Square scrollX={scrollX} />
+        <Animated.FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={DATA}
+          scrollEventThrottle={32}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false }
+          )}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          keyExtractor={(item) => item.key}
+          pagingEnabled
+          renderItem={({ item }) => {
+            return (
               <View
                 style={{
-                  flex: 0.7,
-                  justifyContent: "center",
+                  width: width,
+                  padding: 20,
+                  alignItems: "center",
                 }}
               >
-                <Image
-                  source={{ uri: item.image }}
+                <View
                   style={{
-                    width: width / 1.5,
-                    height: width / 1.5,
-                    resizeMode: "contain",
-                  }}
-                />
-              </View>
-              <View style={{ flex: 0.3 }}>
-                <Text
-                  style={{
-                    fontWeight: "800",
-                    fontSize: 28,
-                    marginBottom: 10,
-                    color: "#fff",
+                    flex: 0.7,
+                    justifyContent: "center",
                   }}
                 >
-                  {item.title}
-                </Text>
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{
+                      width: width / 1.5,
+                      height: width / 1.5,
+                      resizeMode: "contain",
+                    }}
+                  />
+                </View>
+                <View style={{ flex: 0.3 }}>
+                  <Text
+                    style={{
+                      fontWeight: "800",
+                      fontSize: 28,
+                      marginBottom: 10,
+                      color: "#fff",
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                </View>
               </View>
-            </View>
-          );
-        }}
-      />
-      <Indicator scrollX={scrollX} />
-      <TouchableOpacity
-        style={{
-          position: "absolute",
-          bottom: 45,
-          right: 35,
-          width: 60,
-        }}
-        onPress={() => {
-          navigation.replace("Login");
-        }}
-      >
-        <Text style={{ fontSize: 19, color: "#fff", textAlign: "center" }}>
-          Skip
-        </Text>
-      </TouchableOpacity>
+            );
+          }}
+        />
+        <Indicator scrollX={scrollX} />
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            bottom: 45,
+            right: 35,
+            width: 60,
+          }}
+          onPress={() => {
+            navigation.replace("Login");
+          }}
+        >
+          <Text style={{ fontSize: 19, color: "#fff", textAlign: "center" }}>
+            Skip
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

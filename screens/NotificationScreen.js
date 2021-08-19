@@ -5,6 +5,7 @@ import {
   Animated,
   Dimensions,
   Text,
+  TouchableOpacity,
   StatusBar,
 } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
@@ -150,41 +151,54 @@ export default class NotificationScreen extends Component {
         <View style={{ flex: 0.9, width: windowWidth }}>
           {this.state.allNotifications.length === 0 ? (
             <View>
+              <View style={styles.goBackArrow}>
+                <Icon
+                  onPress={() => {
+                    this.props.navigation.pop();
+                  }}
+                  style={{
+                    marginLeft: 20,
+                  }}
+                  type="feather"
+                  name="arrow-left"
+                  size={30}
+                  color="#000"
+                />
+              </View>
               <Text style={{ ...FONTS.h1, textAlign: "center", marginTop: 20 }}>
                 No Notifications !
               </Text>
-              <View style={styles.goBackArrow}>
-                <Icon
-                  onPress={() => {
-                    this.props.navigation.pop();
-                  }}
-                  style={{
-                    marginLeft: 20,
-                  }}
-                  type="feather"
-                  name="arrow-left"
-                  size={30}
-                  color="#000"
-                />
-              </View>
             </View>
           ) : (
             <View style={styles.container_2}>
-              <View style={styles.goBackArrow}>
-                <Icon
-                  onPress={() => {
-                    this.props.navigation.pop();
-                  }}
+              <TouchableOpacity
+                onPress={() => {
+                  this.props.navigation.pop();
+                }}
+                style={[
+                  styles.goBackArrow,
+                  {
+                    marginLeft: 30,
+                    marginTop: 0,
+                    marginBottom: 30,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  },
+                ]}
+              >
+                <Icon type="feather" name="arrow-left" size={30} color="#000" />
+                <Text
                   style={{
-                    marginTop: 20,
-                    marginLeft: 20,
+                    color: "#554A4C",
+                    fontSize: 20,
+                    fontWeight: "700",
+                    width: windowWidth / 1.5,
+                    marginLeft: 10,
                   }}
-                  type="feather"
-                  name="arrow-left"
-                  size={30}
-                  color="#000"
-                />
-              </View>
+                >
+                  Go Back
+                </Text>
+              </TouchableOpacity>
               <SwipeListView
                 disableRightSwipe
                 data={this.state.allNotifications}

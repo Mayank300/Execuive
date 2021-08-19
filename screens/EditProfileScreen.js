@@ -181,7 +181,7 @@ const EditProfileScreen = ({ navigation }) => {
               contact: user_contact,
             })
             .then(() => {
-              navigation.replace("Home");
+              // navigation.replace("Home");
               return Alert.alert("Profile Updated Successfully");
             })
         : alert("Please fill or recheck data");

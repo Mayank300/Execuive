@@ -12,6 +12,8 @@ import ExpiryProduct from "./ExpiryProduct";
 import EditProfileScreen from "./EditProfileScreen";
 import NotificationScreen from "./NotificationScreen";
 import BillScreen from "./BillScreen";
+import MyActivities from "./MyActivities";
+import LoadingScreen from "./LoadingScreen";
 
 export {
   Home,
@@ -28,4 +30,6 @@ export {
   EditProfileScreen,
   NotificationScreen,
   BillScreen,
+  MyActivities,
+  LoadingScreen,
 };

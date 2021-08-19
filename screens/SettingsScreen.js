@@ -18,6 +18,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Title, Caption, Text, TouchableRipple } from "react-native-paper";
 import { SafeAreaView } from "react-native";
 import { sendEmail } from "../mail/sendEmail";
+// import { useIsFocused } from "@react-navigation/native";
 
 const SettingsScreen = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -28,11 +29,13 @@ const SettingsScreen = ({ navigation }) => {
   const [expiryList, setExpiryList] = useState([]);
   const [cost, setCost] = useState([]);
 
-  var userEmail = firebase.auth().currentUser.email;
+  // const isFocused = useIsFocused();
+
+  const userEmail = firebase.auth().currentUser.email;
 
   useEffect(() => {
     getUserDetails();
-    fetchImage(userEmail);
+    fetchImage(email);
     getExpiryProducts();
   }, []);
 
@@ -41,17 +44,10 @@ const SettingsScreen = ({ navigation }) => {
       const result = await Share.share({
         message: `Name: ${name}\nEmail ID: ${email}\nContact: ${
           area.callingCode + " " + contact
-        }`,
+        }\nTotal Products: ${
+          expiryList.length
+        }\nTotal Stock Price: ${cost}\nCountry: ${area.name}`,
       });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
     } catch (error) {
       alert(error.message);
     }
@@ -158,8 +154,8 @@ const SettingsScreen = ({ navigation }) => {
       {
         text: "Yes",
         onPress: () => {
-          navigation.replace("Login");
           firebase.auth().signOut();
+          navigation.replace("Login");
         },
       },
       { text: "Cancel", onPress: () => {} },
@@ -284,12 +280,9 @@ const SettingsScreen = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           </View>
-          <Icon
-            type="font-awesome"
-            name="share"
-            onPress={() => onShare()}
-            style={{ position: "absoulte", top: 10 }}
-          />
+          <View style={{ marginLeft: -50 }}>
+            <Icon type="font-awesome" name="share" onPress={() => onShare()} />
+          </View>
         </View>
       </View>
 
@@ -416,18 +409,14 @@ const SettingsScreen = ({ navigation }) => {
                   },
                 ]}
               >
-                <Image
-                  source={icons.shelf}
-                  resizeMode="contain"
-                  style={[
-                    styles.icon,
-                    {
-                      tintColor: COLORS.green,
-                    },
-                  ]}
+                <Icon
+                  type="feather"
+                  name="activity"
+                  color="#66D59A"
+                  size={30}
                 />
               </View>
-              <Text style={styles.menuItemText}>Shelves</Text>
+              <Text style={styles.menuItemText}>My Activities</Text>
             </View>
           </TouchableRipple>
 
