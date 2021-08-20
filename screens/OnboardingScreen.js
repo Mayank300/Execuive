@@ -123,7 +123,6 @@ const Square = ({ scrollX }) => {
 };
 
 export default function OnboardingScreen({ navigation }) {
-<<<<<<< HEAD
   React.useEffect(() => {
     checkIfLoggedIn();
   }, []);
@@ -141,21 +140,6 @@ export default function OnboardingScreen({ navigation }) {
       }
     });
   }
-=======
-//   React.useEffect(() => {
-//     checkIfLoggedIn();
-//   });
-
-//   function checkIfLoggedIn() {
-//     firebase.auth().onAuthStateChanged((user) => {
-//       if (user) {
-//         navigation.replace("Home");
-//       } else {
-//         return null;
-//       }
-//     }); 
-//   }
->>>>>>> e5d37cf61440d82ebe0cec390e5598d1c2f7b336
 
   const scrollX = React.useRef(new Animated.Value(0)).current;
   return (

@@ -11,6 +11,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import moment from "moment";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
@@ -38,6 +39,9 @@ export default class ProductList extends React.Component {
       doc_id: "",
     };
     this.productRef = null;
+    this.productName = React.createRef();
+    this.cost = React.createRef();
+    this.quantity = React.createRef();
   }
 
   componentDidMount() {
@@ -46,6 +50,11 @@ export default class ProductList extends React.Component {
 
   getProductList = () => {
     var email = firebase.auth().currentUser.email;
+    var currentDate = moment().subtract(0, "days").format("YYYY-MM-DD");
+    var today = currentDate.toString();
+
+    console.log(today);
+
     this.productRef = db
       .collection("products")
       .where("user_id", "==", email)
@@ -204,6 +213,12 @@ export default class ProductList extends React.Component {
                     onChangeText={(name) =>
                       this.setState({ product_name: name })
                     }
+                    ref={this.productName}
+                    blurOnSubmit={false}
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      this.cost.current.focus();
+                    }}
                   />
                 </View>
 
@@ -227,6 +242,12 @@ export default class ProductList extends React.Component {
                     value={this.state.cost}
                     onChangeText={(cost) => this.setState({ cost: cost })}
                     keyboardType="numeric"
+                    ref={this.cost}
+                    blurOnSubmit={false}
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      this.quantity.current.focus();
+                    }}
                   />
                 </View>
                 <View style={styles.sepeerator} />
@@ -252,6 +273,7 @@ export default class ProductList extends React.Component {
                       this.setState({ quantity: quantity })
                     }
                     keyboardType="numeric"
+                    ref={this.quantity}
                   />
                 </View>
                 <View style={styles.sepeerator} />
@@ -289,8 +311,30 @@ export default class ProductList extends React.Component {
                       this.setState({
                         showModal: false,
                       });
+                      {
+                        Platform.OS === "ios"
+                          ? null
+                          : ToastAndroid.show(
+                              "Product Updated Successfully",
+                              ToastAndroid.SHORT
+                            );
+                      }
+                    }}
+                    style={{
+                      alignItems: "center",
+                      flexDirection: "row",
                     }}
                   >
+                    <Text
+                      style={{
+                        marginRight: 5,
+                        color: "#554A4C",
+                        fontSize: 25,
+                        fontWeight: "700",
+                      }}
+                    >
+                      Update
+                    </Text>
                     <Icon type="feather" name="check" size={35} />
                   </TouchableOpacity>
                 </View>
@@ -362,7 +406,7 @@ export default class ProductList extends React.Component {
                           <View
                             style={{
                               marginLeft: 13,
-                              width: windowWidth / 1.5,
+                              width: windowWidth / 2.5,
                             }}
                           >
                             <View

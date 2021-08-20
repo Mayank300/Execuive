@@ -14,6 +14,7 @@ import NotificationScreen from "./NotificationScreen";
 import BillScreen from "./BillScreen";
 import MyActivities from "./MyActivities";
 import LoadingScreen from "./LoadingScreen";
+import ExpiryProductScreen from "./ExpiryProductScreen";
 
 export {
   Home,
@@ -21,6 +22,7 @@ export {
   SignUp,
   Login,
   OnboardingScreen,
+  ExpiryProductScreen,
   GraphScreen,
   SettingsScreen,
   ForgotPassword,

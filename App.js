@@ -12,6 +12,7 @@ import {
   ExpiryProduct,
   NotificationScreen,
   BillScreen,
+  ExpiryProductScreen,
   LoadingScreen,
   MyActivities,
 } from "./screens";
@@ -82,6 +83,10 @@ const App = ({ navigation }) => {
           <Stack.Screen name="GoogleSearch" component={GoogleSearch} />
           <Stack.Screen name="AmazonSearch" component={AmazonSearch} />
           <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} />
+          <Stack.Screen
+            name="ExpiryProductScreen"
+            component={ExpiryProductScreen}
+          />
           <Stack.Screen
             name="EditProfileScreen"
             component={EditProfileScreen}
