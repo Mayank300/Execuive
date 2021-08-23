@@ -35,8 +35,8 @@ const SettingsScreen = ({ navigation }) => {
 
   useEffect(() => {
     getUserDetails();
-    fetchImage(email);
     getExpiryProducts();
+    fetchImage(email);
   }, []);
 
   const onShare = async () => {

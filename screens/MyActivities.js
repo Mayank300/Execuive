@@ -18,7 +18,8 @@ import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements";
 import * as Animatable from "react-native-animatable";
-
+import { Feather } from "@expo/vector-icons";
+import { COLORS } from "../constants/theme";
 export default class MyActivities extends React.Component {
   constructor(props) {
     super(props);
@@ -350,14 +351,24 @@ export default class MyActivities extends React.Component {
                 Platform.OS === "ios" ? { marginTop: 40 } : { marginTop: 20 }
               }
             >
-              <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+              <TouchableOpacity
+                style={{
+                  marginLeft: 30,
+                  marginTop: 0,
+                  marginBottom: 30,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+                onPress={() => this.props.navigation.pop()}
+              >
+                <Feather name="arrow-left" size={30} color={COLORS.black} />
                 <Text
                   style={{
                     color: "#554A4C",
                     fontSize: 20,
                     fontWeight: "700",
                     width: windowWidth / 1.5,
-                    marginLeft: 30,
+                    marginLeft: 5,
                   }}
                 >
                   Go Back
@@ -394,7 +405,7 @@ export default class MyActivities extends React.Component {
               }}
               onPress={() => this.props.navigation.pop()}
             >
-              <Icon type="feather" name="arrow-left" size={30} color="#000" />
+              <Feather name="arrow-left" size={30} color={COLORS.black} />
               <Text
                 style={{
                   color: "#554A4C",

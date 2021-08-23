@@ -15,6 +15,7 @@ import {
   Modal,
   FlatList,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
@@ -33,6 +34,8 @@ const ForgotPassword = ({ navigation }) => {
   const [otpFormVisibility, setOtpFormVisibility] = React.useState(false);
   const [selectedArea, setSelectedArea] = React.useState(null);
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [showLoading, setShowLoading] = React.useState(false);
+  const [showOTPLoading, setShowOTPLoading] = React.useState(false);
   const [areas, setAreas] = React.useState([]);
 
   const emailRef = useRef(null);
@@ -76,10 +79,13 @@ const ForgotPassword = ({ navigation }) => {
   }, []);
 
   const sendPasswordReset = () => {
+    console.log("1");
+    console.log(user_email);
     firebase
       .auth()
       .sendPasswordResetEmail(user_email)
       .then(() => {
+        console.log("2");
         setUser_email("");
         navigation.replace("Login");
         return alert("Check registered email and change password ");
@@ -87,11 +93,13 @@ const ForgotPassword = ({ navigation }) => {
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
+        alert(error);
         console.log(error);
       });
   };
 
   const handleSendCode = async () => {
+    setShowLoading(true);
     try {
       const phoneProvider = new firebase.auth.PhoneAuthProvider();
       const verificationId = await phoneProvider.verifyPhoneNumber(
@@ -101,24 +109,30 @@ const ForgotPassword = ({ navigation }) => {
       setVerificationId(verificationId);
       setOtpFormVisibility(true);
       alert("Verification code has been sent to your phone.");
+      setShowLoading(false);
       otpRef.current.focus();
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);
+      setShowLoading(false);
+      setOtpFormVisibility(false);
     }
   };
 
   const handleConfirmSendCode = async () => {
+    setShowOTPLoading(true);
     try {
       const credential = firebase.auth.PhoneAuthProvider.credential(
         verificationId,
         verificationCode
       );
       await firebase.auth().signInWithCredential(credential);
+      setShowOTPLoading(false);
       sendPasswordReset();
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);
+      setShowOTPLoading(false);
     }
   };
 
@@ -374,11 +388,16 @@ const ForgotPassword = ({ navigation }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
+            disabled={showOTPLoading ? true : false}
             onPress={() => {
               handleConfirmSendCode();
             }}
           >
-            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Next</Text>
+            {showOTPLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Next</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -396,17 +415,16 @@ const ForgotPassword = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
+          disabled={showLoading ? true : false}
           onPress={() => {
-            const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-            if (reg.test(user_email) === true) {
-              handleSendCode();
-            } else {
-              alert("Email baddly formatted");
-            }
+            handleSendCode();
           }}
         >
-          <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Verify</Text>
+          {showLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Verify</Text>
+          )}
         </TouchableOpacity>
       </View>
     );
