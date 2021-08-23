@@ -23,7 +23,7 @@ import { windowHeight, windowWidth } from "../constants/Dimensions";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 // import CodePush from "react-native-code-push";
 // import RNRestart from "react-native-restart";
-export default class ExpiryProduct extends Component {
+export default class HomeComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {

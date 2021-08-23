@@ -9,12 +9,14 @@ import {
   ProductList,
   ProductInfo,
   EditProfileScreen,
-  ExpiryProduct,
+  HomeComponent,
   NotificationScreen,
   BillScreen,
-  ExpiryProductScreen,
+  SellerScreen,
+  ExpiredProductScreen,
   LoadingScreen,
   MyActivities,
+  TodoScreen,
 } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
@@ -79,13 +81,15 @@ const App = ({ navigation }) => {
           <Stack.Screen name="Graph" component={GraphScreen} />
           <Stack.Screen name="ProductList" component={ProductList} />
           <Stack.Screen name="Profile" component={SettingsScreen} />
+          <Stack.Screen name="SellerScreen" component={SellerScreen} />
           <Stack.Screen name="ProductInfo" component={ProductInfo} />
           <Stack.Screen name="GoogleSearch" component={GoogleSearch} />
           <Stack.Screen name="AmazonSearch" component={AmazonSearch} />
-          <Stack.Screen name="ExpiryProduct" component={ExpiryProduct} />
+          <Stack.Screen name="TodoScreen" component={TodoScreen} />
+          <Stack.Screen name="HomeComponent" component={HomeComponent} />
           <Stack.Screen
-            name="ExpiryProductScreen"
-            component={ExpiryProductScreen}
+            name="ExpiredProductScreen"
+            component={ExpiredProductScreen}
           />
           <Stack.Screen
             name="EditProfileScreen"

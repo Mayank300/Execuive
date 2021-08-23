@@ -15,7 +15,7 @@ import { Icon, Avatar } from "react-native-elements";
 import firebase from "firebase";
 import db from "../firebase/config";
 import * as ImagePicker from "expo-image-picker";
-import ExpiryProduct from "./ExpiryProduct";
+import HomeComponent from "./HomeComponent";
 import { DrawerActions } from "@react-navigation/native";
 import moment from "moment";
 import { ActivityIndicator } from "react-native";
@@ -349,7 +349,7 @@ const Home = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {/* Expired */}
           <TouchableOpacity
             style={{
@@ -357,7 +357,7 @@ const Home = ({ navigation }) => {
               width: 60,
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate("ExpiryProductScreen")}
+            onPress={() => navigation.navigate("ExpiredProductScreen")}
           >
             <View
               style={{
@@ -372,18 +372,104 @@ const Home = ({ navigation }) => {
             >
               <Icon
                 type="feather"
-                name="bar-chart-2"
+                name="alert-triangle"
                 color="#FF4134"
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
+                size={26}
               />
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
             >
               Expired
+            </Text>
+          </TouchableOpacity>
+          {/* Sellers */}
+          <TouchableOpacity
+            style={{
+              marginBottom: SIZES.padding * 2,
+              width: 60,
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate("SellerScreen")}
+          >
+            <View
+              style={{
+                height: 50,
+                width: 50,
+                marginBottom: 5,
+                borderRadius: 20,
+                backgroundColor: COLORS.lightGreen,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon type="feather" name="users" color="#00BA63" size={26} />
+            </View>
+            <Text
+              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
+            >
+              Sellers
+            </Text>
+          </TouchableOpacity>
+          {/* Todo */}
+          <TouchableOpacity
+            style={{
+              marginBottom: SIZES.padding * 2,
+              width: 60,
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate("TodoScreen")}
+          >
+            <View
+              style={{
+                height: 50,
+                width: 50,
+                marginBottom: 5,
+                borderRadius: 20,
+                backgroundColor: COLORS.lightyellow,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon type="feather" name="edit" color="#FFC664" size={26} />
+            </View>
+            <Text
+              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
+            >
+              Todo
+            </Text>
+          </TouchableOpacity>
+          {/* Sold */}
+          <TouchableOpacity
+            style={{
+              marginBottom: SIZES.padding * 2,
+              width: 60,
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate("ExpiredProductScreen")}
+          >
+            <View
+              style={{
+                height: 50,
+                width: 50,
+                marginBottom: 5,
+                borderRadius: 20,
+                backgroundColor: COLORS.lightpurple,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon
+                type="feather"
+                name="trending-up"
+                color="#6B3CE9"
+                size={26}
+              />
+            </View>
+            <Text
+              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
+            >
+              Sold
             </Text>
           </TouchableOpacity>
         </View>
@@ -407,7 +493,7 @@ const Home = ({ navigation }) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <ExpiryProduct
+      <HomeComponent
         renderHeader={renderHeader()}
         renderFeatures={renderFeatures()}
       />

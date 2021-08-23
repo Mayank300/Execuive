@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  ActivityIndicator,
   Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -34,6 +35,8 @@ const SignUp = ({ navigation }) => {
   const [user_contact, setUser_contact] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
   const [otpFormVisibility, setOtpFormVisibility] = React.useState(false);
+  const [showLoading, setShowLoading] = React.useState(false);
+  const [showOTPLoading, setShowOTPLoading] = React.useState(false);
 
   // otp Verification
 
@@ -111,6 +114,7 @@ const SignUp = ({ navigation }) => {
   };
 
   const handleSendCode = async () => {
+    setShowLoading(true);
     try {
       const phoneProvider = new firebase.auth.PhoneAuthProvider();
       const verificationId = await phoneProvider.verifyPhoneNumber(
@@ -120,14 +124,17 @@ const SignUp = ({ navigation }) => {
       setVerificationId(verificationId);
       setOtpFormVisibility(true);
       alert("Verification code has been sent to your phone.");
+      setShowLoading(false);
       otpRef.current.focus();
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);
+      setShowLoading(false);
     }
   };
 
   const handleConfirmSendCode = async () => {
+    setShowOTPLoading(true);
     try {
       const credential = firebase.auth.PhoneAuthProvider.credential(
         verificationId,
@@ -135,9 +142,11 @@ const SignUp = ({ navigation }) => {
       );
       await firebase.auth().signInWithCredential(credential);
       signUpMethod(user_email, user_password);
+      setShowOTPLoading(false);
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);
+      setShowOTPLoading(false);
     }
   };
 
@@ -487,13 +496,18 @@ const SignUp = ({ navigation }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
+            disabled={showOTPLoading ? true : false}
             onPress={() => {
               handleConfirmSendCode();
             }}
           >
-            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
-              Create Account
-            </Text>
+            {showOTPLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
+                Create Account
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -515,10 +529,15 @@ const SignUp = ({ navigation }) => {
             onPress={() => {
               handleSendCode();
             }}
+            disabled={showLoading ? true : false}
           >
-            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
-              Verify Account
-            </Text>
+            {showLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={{ color: COLORS.white, ...FONTS.h3 }}>
+                Verify Account
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

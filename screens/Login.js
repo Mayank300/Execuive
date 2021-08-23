@@ -13,6 +13,7 @@ import {
   Platform,
   Alert,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import firebase from "firebase";
@@ -25,12 +26,44 @@ const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [user_email, setUser_email] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
+  const [showLoading, setShowLoading] = React.useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = React.useState(false);
 
   //  refs make excel sheet - quantity, name, productId,
 
   const passwordRef = useRef(null);
 
+  // const handleGoogleSignIn = () => {
+  //   const config = {
+  //     iosClientId: `537430705010-3gms7nmveb2khl8qplccp0rq30mvu4oh.apps.googleusercontent.com`,
+  //     androidClientId: `537430705010-h0liglm3g84e2letcfn16p2mrd4rf78e.apps.googleusercontent.com`,
+  //     scopes: ["profile", "email"],
+  //   };
+
+  //   Google.logInAsync(config)
+  //     .then((result) => {
+  //       const { type, user } = result;
+  //       if (type == "success") {
+  //         const { email, name, photoUrl } = user;
+  //         Alert.aler(
+  //           "Succesfully Connected!",
+  //           "Please verify email before login"
+  //         );
+  //         setTimeout(() => {
+  //           navigation.replace("Login");
+  //         }, 1000);
+  //       } else {
+  //         Alert.alert("Error Connecting !", "Google signin was canclled");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       Alert.aler("Error Connecting !", "Chek you network connection!");
+  //     });
+  // };
+
   const login = (emailId, password) => {
+    setShowLoading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(emailId, password)
@@ -45,7 +78,9 @@ const Login = ({ navigation }) => {
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        return Alert.alert(errorMessage);
+        setShowLoading(false);
+        alert(errorMessage);
+        console.log(errorMessage);
       });
   };
 
@@ -212,11 +247,16 @@ const Login = ({ navigation }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
+          disabled={showLoading ? true : false}
           onPress={() => {
             login(user_email, user_password);
           }}
         >
-          <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Login</Text>
+          {showLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Login</Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={{
