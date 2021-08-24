@@ -36,6 +36,7 @@ const SettingsScreen = ({ navigation }) => {
   useEffect(() => {
     getUserDetails();
     getExpiryProducts();
+    var email = firebase.auth().currentUser.email;
     fetchImage(email);
   }, []);
 

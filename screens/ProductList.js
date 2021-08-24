@@ -22,6 +22,8 @@ import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements";
 
+import * as Print from "expo-print";
+
 export default class ProductList extends React.Component {
   constructor(props) {
     super(props);
@@ -376,7 +378,37 @@ export default class ProductList extends React.Component {
                 Platform.OS === "ios" ? { marginTop: 40 } : { marginTop: 20 }
               }
             >
-              <Animated.View animation="fadeInLeftBig" duration={1500}>
+              <Animated.View animation="fadeIn" duration={1100}>
+                <View
+                  style={{
+                    height: 50,
+                    alignItems: "center",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      position: "absolute",
+                      right: 20,
+                    }}
+                    onPress={() => {}}
+                  >
+                    <Text
+                      style={{
+                        color: "#554A4C",
+                        fontSize: 25,
+                        fontWeight: "700",
+                        marginRight: 10,
+                      }}
+                    >
+                      Save As Pdf
+                    </Text>
+                    <Icon type="feather" name="file-text" size={30} />
+                  </TouchableOpacity>
+                </View>
+              </Animated.View>
+              <Animated.View animation="fadeIn" duration={1100}>
                 <SearchBar
                   round
                   searchIcon={{ size: 24 }}

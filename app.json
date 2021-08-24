@@ -21,18 +21,22 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-4959856572636607~2918759181"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.mayank03.Executive"
+      "package": "com.mayank03.Executive",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-4959856572636607~8306176602"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
