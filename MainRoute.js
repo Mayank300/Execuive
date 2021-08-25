@@ -26,8 +26,6 @@ import Tabs from "./navigation/tabs";
 import AmazonSearch from "./search/AmazonSearch";
 import GoogleSearch from "./search/GoogleSearch";
 import NetInfo from "@react-native-community/netinfo";
-import { ActivityIndicator, View } from "react-native";
-import firebase from "firebase";
 
 const theme = {
   ...DefaultTheme,

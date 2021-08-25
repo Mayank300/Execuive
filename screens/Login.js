@@ -21,6 +21,9 @@ import db from "../firebase/config";
 import { Icon } from "react-native-elements";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
 import { windowHeight } from "../constants/Dimensions";
+import * as Google from "expo-google-app-auth";
+import { SocialIcon } from "react-native-elements";
+import { windowWidth } from "../components/Dimensions";
 
 const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -28,39 +31,58 @@ const Login = ({ navigation }) => {
   const [user_password, setUser_password] = React.useState("");
   const [showLoading, setShowLoading] = React.useState(false);
   const [googleSubmitting, setGoogleSubmitting] = React.useState(false);
+  const passwordRef = useRef(null);
 
   //  refs make excel sheet - quantity, name, productId,
 
-  const passwordRef = useRef(null);
+  const handleGoogleSignIn = () => {
+    setGoogleSubmitting(true);
+    const config = {
+      iosClientId: `537430705010-3gms7nmveb2khl8qplccp0rq30mvu4oh.apps.googleusercontent.com`,
+      androidClientId: `537430705010-h0liglm3g84e2letcfn16p2mrd4rf78e.apps.googleusercontent.com`,
+      scopes: ["profile", "email"],
+    };
 
-  // const handleGoogleSignIn = () => {
-  //   const config = {
-  //     iosClientId: `537430705010-3gms7nmveb2khl8qplccp0rq30mvu4oh.apps.googleusercontent.com`,
-  //     androidClientId: `537430705010-h0liglm3g84e2letcfn16p2mrd4rf78e.apps.googleusercontent.com`,
-  //     scopes: ["profile", "email"],
-  //   };
+    Google.logInAsync(config)
+      .then((result) => {
+        const { type, user } = result;
+        if (type === "success") {
+          const { email, name, photoUrl } = user;
+          Alert.alert(
+            "Succesfully Connected!",
+            "Please verify email before login"
+          );
 
-  //   Google.logInAsync(config)
-  //     .then((result) => {
-  //       const { type, user } = result;
-  //       if (type == "success") {
-  //         const { email, name, photoUrl } = user;
-  //         Alert.aler(
-  //           "Succesfully Connected!",
-  //           "Please verify email before login"
-  //         );
-  //         setTimeout(() => {
-  //           navigation.replace("Login");
-  //         }, 1000);
-  //       } else {
-  //         Alert.alert("Error Connecting !", "Google signin was canclled");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       Alert.aler("Error Connecting !", "Chek you network connection!");
-  //     });
-  // };
+          db.collection("users")
+            .add({
+              user_name: name,
+              email_id: email,
+              photo_url: photoUrl,
+              google_login: true,
+              contact: "",
+              selected_area: [
+                {
+                  callingCode: "",
+                  code: "",
+                  flag: "",
+                  name: "",
+                },
+              ],
+            })
+            .then(() => {
+              navigation.replace("Home");
+            });
+        } else {
+          Alert.alert("Error Connecting !", "Google signin was canclled");
+        }
+        setGoogleSubmitting(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setGoogleSubmitting(false);
+        Alert.alert("Error Connecting !", "Chek you network connection!");
+      });
+  };
 
   const login = (emailId, password) => {
     setShowLoading(true);
@@ -265,7 +287,7 @@ const Login = ({ navigation }) => {
           onPress={() => navigation.replace("ForgotPassword")}
         >
           <Text
-            style={{ color: COLORS.white, ...FONTS.h5, textAlign: "center" }}
+            style={{ color: COLORS.white, ...FONTS.h4, textAlign: "center" }}
           >
             Forgot password?
           </Text>
@@ -277,11 +299,30 @@ const Login = ({ navigation }) => {
           onPress={() => navigation.replace("SignUp")}
         >
           <Text
-            style={{ color: COLORS.white, ...FONTS.h5, textAlign: "center" }}
+            style={{ color: COLORS.white, ...FONTS.h4, textAlign: "center" }}
           >
             Don't have an account? Make One !!!
           </Text>
         </TouchableOpacity>
+        <View
+          style={{
+            marginTop: 30,
+          }}
+        >
+          <SocialIcon
+            iconColor="#000"
+            title="Sign In With Google"
+            button
+            disabled={!googleSubmitting ? false : true}
+            type="google"
+            fontStyle={{ fontSize: 17 }}
+            loading={!googleSubmitting ? false : true}
+            onPress={() => {
+              handleGoogleSignIn();
+            }}
+            style={{ height: 60 }}
+          />
+        </View>
       </View>
     );
   }

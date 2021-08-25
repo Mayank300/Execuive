@@ -47,19 +47,24 @@ export default class SellerScreen extends Component {
   }
 
   getSellers = () => {
-    var userId = firebase.auth().currentUser.email;
-    this.requestRef = db
+    var email = firebase.auth().currentUser.email;
+    this.selleRef = db
       .collection("seller")
-      .where("user_id", "==", userId)
-      .onSnapshot((snapshot) => {
-        var DATA = snapshot.docs.map((doc) => doc.data());
-        this.setState({
-          sellers: DATA,
+      .where("user_id", "==", email)
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          var data = doc.data();
+          this.setState({
+            sellerName: data,
+          });
         });
       });
-
-    console.log(this.state.sellers);
   };
+
+  componentWillUnmount() {
+    this.sellerRef;
+  }
 
   addSeller = () => {
     var userId = firebase.auth().currentUser.email;
@@ -125,6 +130,7 @@ export default class SellerScreen extends Component {
             Go Back
           </Text>
         </TouchableOpacity>
+
         <Modal
           animationType="slide"
           visible={this.state.addTodoVisible}
@@ -253,6 +259,18 @@ export default class SellerScreen extends Component {
             </TouchableOpacity>
           </View>
         </Modal>
+
+        <View
+          style={{
+            justifyContent: "center",
+            marginTop: Platform.OS === "ios" ? 100 : 60,
+          }}
+        >
+          {this.state.sellers.map((item, index) => {
+            <Text>{this.state.sellerName}</Text>;
+          })}
+        </View>
+
         <TouchableOpacity
           onPress={() => this.toggleAddSellerModal()}
           style={styles.addButton}

@@ -29,11 +29,11 @@
       }
     },
     "android": {
+      "package": "com.mayank03.Executive",
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.mayank03.Executive",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-4959856572636607~8306176602"
       }

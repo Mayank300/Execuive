@@ -100,6 +100,7 @@ const SignUp = ({ navigation }) => {
                 email_id: user_email,
                 contact: user_contact,
                 selected_area: selectedArea,
+                google_login: false,
               });
 
               navigation.replace("Login");
