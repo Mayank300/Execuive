@@ -17,6 +17,7 @@ import LoadingScreen from "./LoadingScreen";
 import ExpiredProductScreen from "./ExpiredProductScreen";
 import SellerScreen from "./SellerScreen";
 import TodoScreen from "./TodoScreen";
+import SoldScreen from "./SoldScreen";
 
 export {
   Home,
@@ -38,4 +39,5 @@ export {
   MyActivities,
   LoadingScreen,
   TodoScreen,
+  SoldScreen,
 };

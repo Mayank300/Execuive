@@ -32,12 +32,16 @@ export default class HomeComponent extends Component {
       cost: [],
       expDate: [],
       refreshing: false,
+      expiredProducts: [],
+      soldProducts: [],
     };
     this.productRf = null;
   }
 
   componentDidMount() {
     this.getExpiryProducts();
+    this.getExpiredProductList();
+    this.getSoldProducts();
   }
 
   getExpiryProducts = () => {
@@ -350,6 +354,44 @@ export default class HomeComponent extends Component {
     }
   };
 
+  getSoldProducts = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("sold")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var DATA = [];
+        snapshot.docs.map((doc) => {
+          var list = doc.data();
+          list["doc_id"] = doc.id;
+          DATA.push(list);
+        });
+        this.setState({ soldProducts: DATA.length });
+      });
+  };
+
+  getExpiredProductList = () => {
+    var email = firebase.auth().currentUser.email;
+    var DATA = [];
+    var expiredProducts = [];
+
+    db.collection("products")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        snapshot.docs.map((doc) => {
+          var list = doc.data();
+          list["doc_id"] = doc.id;
+          DATA.push(list);
+        });
+        DATA.forEach((product) => {
+          var expDateString = product.exp_date;
+          if (moment(expDateString).isBefore(moment(), "day")) {
+            expiredProducts.push(product);
+          }
+        });
+        this.setState({ expiredProducts: expiredProducts.length });
+      });
+  };
+
   render() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
@@ -372,7 +414,8 @@ export default class HomeComponent extends Component {
               <ShelfCard
                 totalProducts={this.state.expiryList.length}
                 totalCost={this.state.cost}
-                totalExpiry={this.state.expDate}
+                totalExpiry={this.state.expiredProducts}
+                totalProductSold={this.state.soldProducts}
               />
             </View>
             {this.props.renderFeatures}

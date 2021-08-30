@@ -22,111 +22,20 @@ export class BillScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedDate: "week",
+      today: 0,
     };
   }
-
-  renderSelectionButton = () => {
-    const fadeIn = {
-      from: {
-        opacity: 0.001,
-      },
-      to: {
-        opacity: 1,
-      },
-    };
-
-    return (
-      <Animatable.View animation={fadeIn} style={styles.animatableView}>
-        {/* month */}
-        {this.state.selectedDate === "month" ? (
-          <TouchableOpacity style={styles.selectButton}>
-            <Text style={styles.selectButtonText}>Month</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => this.setState({ selectedDate: "month" })}
-            style={styles.notSelectButton}
-          >
-            <Text style={styles.notSelectButtonText}>Month</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* week */}
-        {this.state.selectedDate === "week" ? (
-          <TouchableOpacity style={styles.selectButton}>
-            <Text style={styles.selectButtonText}>Week</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => this.setState({ selectedDate: "week" })}
-            style={styles.notSelectButton}
-          >
-            <Text style={styles.notSelectButtonText}>Week</Text>
-          </TouchableOpacity>
-        )}
-
-        {/* day */}
-        {this.state.selectedDate === "day" ? (
-          <TouchableOpacity style={styles.selectButton}>
-            <Text style={styles.selectButtonText}>Day</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => this.setState({ selectedDate: "day" })}
-            style={styles.notSelectButton}
-          >
-            <Text style={styles.notSelectButtonText}>Day</Text>
-          </TouchableOpacity>
-        )}
-      </Animatable.View>
-    );
-  };
 
   graphView = () => {
     return (
       <View style={{ alignSelf: "center", marginTop: 30 }}>
-        {/* <BarChart
-          data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [
-              {
-                data: [20, 45, 28, 80, 99, 43],
-              },
-            ],
-          }}
-          width={windowWidth - 60}
-          height={220}
-          yAxisLabel={"Rs"}
-          chartConfig={{
-            backgroundColor: "#1cc910",
-            backgroundGradientFrom: "#eff3ff",
-            backgroundGradientTo: "#efefef",
-            decimalPlaces: 2,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            style: {
-              borderRadius: 16,
-            },
-          }}
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-          }}
-        /> */}
         <LineChart
           data={{
-            labels: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Suday",
-            ],
+            labels: ["1", "2", "3", "4", "5", "6", "7"],
             datasets: [
               {
                 data: [
+                  Math.random() * 100,
                   Math.random() * 100,
                   Math.random() * 100,
                   Math.random() * 100,
@@ -137,15 +46,15 @@ export class BillScreen extends Component {
               },
             ],
           }}
-          width={windowWidth - 50} // from react-native
+          width={windowWidth - 50}
           height={220}
           yAxisLabel="₹ "
-          yAxisInterval={1} // optional, defaults to 1
+          yAxisInterval={1}
           chartConfig={{
             backgroundColor: "#e26a00",
             backgroundGradientFrom: "#fb8c00",
             backgroundGradientTo: "#ffa726",
-            decimalPlaces: 2, // optional, defaults to 2dp
+            decimalPlaces: 2,
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
@@ -171,7 +80,7 @@ export class BillScreen extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.buttonContainer}>
-          {this.renderSelectionButton()}
+          <Text>Bar Graph</Text>
         </View>
         <View style={styles.graphContainer}>
           <ScrollView>{this.graphView()}</ScrollView>

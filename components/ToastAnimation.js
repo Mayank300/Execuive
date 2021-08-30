@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
-
-import { Animated, Text } from "react-native";
+import { Animated, Text, Platform } from "react-native";
 
 const ToastAnimation = (props) => {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -35,7 +34,8 @@ const ToastAnimation = (props) => {
             }),
           },
         ],
-        margin: 10,
+        marginTop: Platform.OS === "ios" ? 60 : 10,
+        marginHorizontal: 10,
         marginBottom: 5,
         backgroundColor: "#FFFAFA",
         padding: 10,

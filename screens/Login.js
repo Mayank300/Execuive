@@ -90,6 +90,7 @@ const Login = ({ navigation }) => {
       .auth()
       .signInWithEmailAndPassword(emailId, password)
       .then((authUser) => {
+        setShowLoading(false);
         if (authUser.user.emailVerified) {
           navigation.replace("Home");
           return alert("Logged in successfully !");

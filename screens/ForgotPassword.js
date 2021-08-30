@@ -78,12 +78,11 @@ const ForgotPassword = ({ navigation }) => {
     emailRef.current.focus();
   }, []);
 
-  const sendPasswordReset = () => {
-    console.log("1");
-    console.log(user_email);
+  const sendPasswordReset = (email) => {
+    console.log(email);
     firebase
       .auth()
-      .sendPasswordResetEmail(user_email)
+      .sendPasswordResetEmail(email)
       .then(() => {
         console.log("2");
         setUser_email("");
@@ -91,8 +90,6 @@ const ForgotPassword = ({ navigation }) => {
         return alert("Check registered email and change password ");
       })
       .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
         alert(error);
         console.log(error);
       });
@@ -128,7 +125,7 @@ const ForgotPassword = ({ navigation }) => {
       );
       await firebase.auth().signInWithCredential(credential);
       setShowOTPLoading(false);
-      sendPasswordReset();
+      sendPasswordReset(user_email);
     } catch (err) {
       console.log(`Error: ${err.message}`);
       alert(err.message);

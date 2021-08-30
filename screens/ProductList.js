@@ -12,6 +12,8 @@ import {
   TextInput,
   ScrollView,
   ToastAndroid,
+  SafeAreaView,
+  TouchableWithoutFeedback,
 } from "react-native";
 import moment from "moment";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
@@ -23,6 +25,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements";
 
 import * as Print from "expo-print";
+import { COLORS, FONTS, SIZES } from "../constants";
 
 export default class ProductList extends React.Component {
   constructor(props) {
@@ -39,6 +42,10 @@ export default class ProductList extends React.Component {
       cost: "",
       quantity: "",
       doc_id: "",
+      modalVisible: false,
+      quantityModalVisible: false,
+      QuantityCount: 0,
+      OriginalQuantityCount: 0,
     };
     this.productRef = null;
     this.productName = React.createRef();
@@ -60,6 +67,7 @@ export default class ProductList extends React.Component {
     this.productRef = db
       .collection("products")
       .where("user_id", "==", email)
+      // .where("quantity", ">", 0)
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) => {
         var DATA = [];
@@ -131,35 +139,6 @@ export default class ProductList extends React.Component {
       quantity: "",
       doc_id: "",
     });
-  };
-
-  showAlert = (item) => {
-    return Alert.alert(`${item.product_name}`, `Expires on ${item.exp_date}`, [
-      {
-        text: "View",
-        onPress: () => {
-          this.props.navigation.navigate("ProductInfo", {
-            name: item.product_name,
-            exp_date: item.exp_date,
-            color: item.product_color,
-            id: item.product_id,
-            cost: item.total_cost,
-            quantity: item.quantity,
-          });
-        },
-        style: "cancel",
-      },
-
-      {
-        text: "Delete",
-        onPress: () => this.deleteProduct(item.product_id),
-      },
-      {
-        text: "Cancle",
-        onPress: () => {},
-        style: "cancel",
-      },
-    ]);
   };
 
   showEditModal = (item) => {
@@ -348,6 +327,369 @@ export default class ProductList extends React.Component {
     );
   };
 
+  showAlertModal = (item) => {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+        >
+          <TouchableWithoutFeedback
+            onPress={() => this.setState({ modalVisible: false })}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalSubContainer}>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.props.navigation.navigate("ProductInfo", {
+                        name: item.product_name,
+                        exp_date: item.exp_date,
+                        color: item.product_color,
+                        id: item.product_id,
+                        cost: item.total_cost,
+                        quantity: item.quantity,
+                      });
+                      this.setState({
+                        modalVisible: false,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 2,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightpurple,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon type="feather" name="eye" color="#6B3CE9" size={25} />
+                    <Text
+                      style={{
+                        color: "#6B3CE9",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      View
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.deleteProduct(item.product_id);
+                      this.setState({
+                        modalVisible: false,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 2,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightRed,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon
+                      type="feather"
+                      name="trash-2"
+                      color="#FF4134"
+                      size={25}
+                    />
+                    <Text
+                      style={{
+                        color: "#FF4134",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Delete
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        modalVisible: false,
+                        quantityModalVisible: true,
+                      });
+                      this.setState({
+                        OriginalQuantityCount: item.quantity,
+                        QuantityCount: item.quantity,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 2,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightGreen,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon
+                      type="feather"
+                      name="trending-up"
+                      color="#66D59A"
+                      size={25}
+                    />
+                    <Text
+                      style={{
+                        color: "#66D59A",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Sell
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        modalVisible: false,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 2,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightyellow,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon type="feather" name="x" color="#FFC664" size={25} />
+                    <Text
+                      style={{
+                        color: "#FFC664",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Cancle
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </SafeAreaView>
+    );
+  };
+
+  showSoldInput = (item) => {
+    var fixedQuantityString = item.quantity;
+    var fixedQuantityInteger = parseInt(fixedQuantityString);
+    const { QuantityCount } = this.state;
+    var quantity = parseInt(QuantityCount);
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.quantityModalVisible}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalSubContainer}>
+                <View
+                  style={{
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    height: 80,
+                    width: windowWidth / 1.8,
+                    marginTop: 40,
+                  }}
+                >
+                  {quantity === 0 ? null : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        quantity = quantity - 1;
+                        this.setState({
+                          QuantityCount: quantity,
+                        });
+                      }}
+                      style={[
+                        styles.iconContainer,
+                        { backgroundColor: COLORS.lime },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: 60,
+                          marginTop: -10,
+                          textAlign: "center",
+                        }}
+                      >
+                        -
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: RFValue(50),
+                      marginTop: -10,
+                    }}
+                  >
+                    {quantity}
+                  </Text>
+
+                  {quantity === fixedQuantityInteger ? null : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        quantity = quantity + 1;
+                        this.setState({
+                          QuantityCount: quantity,
+                        });
+                      }}
+                      style={[
+                        styles.iconContainer,
+                        { backgroundColor: COLORS.lime },
+                      ]}
+                    >
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: 40,
+                          marginTop: -5,
+                        }}
+                      >
+                        +
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        quantityModalVisible: false,
+                      });
+                      this.markAsSold(item, quantity);
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 1.65,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightGreen,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon
+                      type="feather"
+                      name="trending-up"
+                      color="#66D59A"
+                      size={25}
+                    />
+                    <Text
+                      style={{
+                        color: "#66D59A",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Mark As Sold
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        quantityModalVisible: false,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginHorizontal: 20,
+                      marginTop: 30,
+                      width: windowWidth / 1.65,
+                      height: 60,
+                      borderRadius: 20,
+                      backgroundColor: COLORS.lightyellow,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Icon type="feather" name="x" color="#FFC664" size={25} />
+                    <Text
+                      style={{
+                        color: "#FFC664",
+                        fontSize: RFValue(25),
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                      }}
+                    >
+                      Cancle
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    );
+  };
+
+  markAsSold = (item, quantity) => {
+    db.collection("sold").add({
+      product_name: item.product_name,
+      quantity: quantity,
+      total_cost: item.total_cost,
+      exp_date: item.exp_date,
+      product_id: item.product_id,
+      user_id: item.user_id,
+      product_color: item.product_color,
+      date_added: item.date_added,
+      original_product_quantity: this.state.OriginalQuantityCount - quantity,
+      original_doc_id: item.doc_id,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    this.setState({
+      OriginalQuantityCount: 0,
+    });
+    var restQuantity = parseInt(item.quantity);
+    db.collection("products")
+      .doc(item.doc_id)
+      .update({
+        quantity: restQuantity - quantity,
+      });
+  };
+
   componentWillUnmount() {
     this.productRef;
   }
@@ -430,8 +772,12 @@ export default class ProductList extends React.Component {
                     return (
                       <View styles={styles.container}>
                         {this.showEditModal(item)}
+                        {this.showAlertModal(item)}
+                        {this.showSoldInput(item)}
                         <TouchableOpacity
-                          onPress={() => this.showAlert(item)}
+                          onPress={() => {
+                            this.setState({ modalVisible: true });
+                          }}
                           key={i}
                           style={styles.productListContent}
                         >
@@ -729,12 +1075,6 @@ const styles = StyleSheet.create({
   },
   // modal
 
-  modalcontainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-  },
   taskContainer: {
     height: windowHeight / 2,
     width: windowWidth / 1.3,
@@ -781,5 +1121,29 @@ const styles = StyleSheet.create({
     paddingLeft: 13,
     fontSize: 19,
     color: "gray",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: windowHeight,
+    width: windowWidth,
+    backgroundColor: "rgba(0,0,0,0.7)",
+  },
+  modalSubContainer: {
+    alignItems: "center",
+
+    height: 400,
+    width: SIZES.width * 0.8,
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radius,
+  },
+  iconContainer: {
+    height: 50,
+    width: 50,
+    marginBottom: 5,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

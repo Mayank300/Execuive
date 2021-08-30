@@ -31,15 +31,79 @@ const Home = ({ navigation }) => {
   const [allNotifications, setAllNotifications] = React.useState([]);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [messages, setMessages] = React.useState([]);
+  const [sold, setSold] = React.useState([]);
+  const [activity, setActivity] = React.useState([]);
+  const [expiredProductList, setExpiredProductList] = React.useState([]);
 
   // const isFocused = useIsFocused();
 
   useEffect(() => {
+    const MINUTE_MS = 5000;
     getUserDetails();
     getNotifications();
-    var email = firebase.auth().currentUser.email;
+    getSoldProducts();
+    getProductList()
+    getAllActivities();
     fetchImage(email);
+    var email = firebase.auth().currentUser.email;
+    const interval = setInterval(() => {
+      fetchImage(email);
+    }, MINUTE_MS);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const getProductList = () => {
+    var email = firebase.auth().currentUser.email;
+    var DATA = [];
+    var expiredProducts = [];
+
+    db
+      .collection("products")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        snapshot.docs.map((doc) => {
+          var list = doc.data();
+          list["doc_id"] = doc.id;
+          DATA.push(list);
+        });
+        DATA.forEach((product) => {
+          var expDateString = product.exp_date;
+          if (moment(expDateString).isBefore(moment(), "day")) {
+            expiredProducts.push(product);
+          }
+        });
+        setExpiredProductList(expiredProducts)
+      });
+  };
+
+  const getSoldProducts = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("sold")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var soldNumber = [];
+        snapshot.docs.map((doc) => {
+          var sold = doc.data();
+          soldNumber.push(sold);
+        });
+        setSold(soldNumber);
+      });
+  };
+
+  const getAllActivities = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("activities")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var activityNumber = [];
+        snapshot.docs.map((doc) => {
+          var sold = doc.data();
+          activityNumber.push(sold);
+        });
+        setActivity(activityNumber);
+      });
+  };
 
   const fetchImage = (imageName) => {
     var storageRef = firebase
@@ -290,6 +354,23 @@ const Home = ({ navigation }) => {
               }}
             >
               <Icon type="feather" name="activity" color="#66D59A" size={30} />
+              <View
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -1,
+                  height: 21,
+                  width: 21,
+                  backgroundColor: COLORS.red,
+                  borderRadius: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "#fff" }}>
+                  {activity.length}
+                </Text>
+              </View>
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
@@ -376,6 +457,23 @@ const Home = ({ navigation }) => {
                 color="#FF4134"
                 size={26}
               />
+               <View
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -1,
+                  height: 21,
+                  width: 21,
+                  backgroundColor: COLORS.red,
+                  borderRadius: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "#fff" }}>
+                  {expiredProductList.length}
+                </Text>
+              </View>
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
@@ -446,7 +544,7 @@ const Home = ({ navigation }) => {
               width: 60,
               alignItems: "center",
             }}
-            onPress={() => navigation.navigate("ExpiredProductScreen")}
+            onPress={() => navigation.navigate("SoldScreen")}
           >
             <View
               style={{
@@ -465,6 +563,23 @@ const Home = ({ navigation }) => {
                 color="#6B3CE9"
                 size={26}
               />
+              <View
+                style={{
+                  position: "absolute",
+                  top: -5,
+                  right: -1,
+                  height: 21,
+                  width: 21,
+                  backgroundColor: COLORS.red,
+                  borderRadius: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 10, color: "#fff" }}>
+                  {sold.length}
+                </Text>
+              </View>
             </View>
             <Text
               style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}

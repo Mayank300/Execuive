@@ -38,6 +38,12 @@ const SettingsScreen = ({ navigation }) => {
     getExpiryProducts();
     var email = firebase.auth().currentUser.email;
     fetchImage(email);
+    const MINUTE_MS = 5000;
+    const interval = setInterval(() => {
+      fetchImage(email);
+    }, MINUTE_MS);
+
+    return () => clearInterval(interval);
   }, []);
 
   const onShare = async () => {
@@ -188,7 +194,7 @@ const SettingsScreen = ({ navigation }) => {
     });
   };
 
-  const sendPasswordReset = () => {
+  const sendPasswordReset = (email) => {
     firebase
       .auth()
       .sendPasswordResetEmail(email)
@@ -205,19 +211,15 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   const passwordResetAlert = () => {
-    return Alert.alert(
-      "ARE YOU SURE",
-      "you want to delete your data forever?",
-      [
-        {
-          text: "Yes",
-          onPress: () => {
-            sendPasswordReset();
-          },
+    return Alert.alert("ARE YOU SURE", "You want ot change your password?", [
+      {
+        text: "Yes",
+        onPress: () => {
+          sendPasswordReset(userEmail);
         },
-        { text: "Cancel", onPress: () => {} },
-      ]
-    );
+      },
+      { text: "Cancel", onPress: () => {} },
+    ]);
   };
 
   const sendMail = () => {

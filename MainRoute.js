@@ -17,6 +17,7 @@ import {
   LoadingScreen,
   MyActivities,
   TodoScreen,
+  SoldScreen,
 } from "./screens";
 import AdScreen from "./AdScreen";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -26,6 +27,9 @@ import Tabs from "./navigation/tabs";
 import AmazonSearch from "./search/AmazonSearch";
 import GoogleSearch from "./search/GoogleSearch";
 import NetInfo from "@react-native-community/netinfo";
+import ScanProduct from "./components/ScanProduct";
+import ScanProductId from "./components/ScanProductId";
+import AddProduct from "./components/AddProduct";
 
 const theme = {
   ...DefaultTheme,
@@ -88,6 +92,10 @@ const MainRoute = ({ navigation }) => {
           <Stack.Screen name="AmazonSearch" component={AmazonSearch} />
           <Stack.Screen name="TodoScreen" component={TodoScreen} />
           <Stack.Screen name="HomeComponent" component={HomeComponent} />
+          <Stack.Screen name="ScanProduct" component={ScanProduct} />
+          <Stack.Screen name="ScanProductId" component={ScanProductId} />
+          <Stack.Screen name="SoldScreen" component={SoldScreen} />
+          <Stack.Screen name="AddProduct" component={AddProduct} />
           <Stack.Screen
             name="ExpiredProductScreen"
             component={ExpiredProductScreen}

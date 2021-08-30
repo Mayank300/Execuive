@@ -46,7 +46,7 @@ const DATA = [
   {
     id: "4",
     title: "Product Consumed",
-    subTitle: "Total Product\nConsumed",
+    subTitle: "Total Product\nSold",
     poster:
       "https://images.unsplash.com/photo-1515542706656-8e6ef17a1521?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
   },
@@ -81,12 +81,21 @@ const OverflowItems = ({ data, scrollXAnimated }) => {
   );
 };
 
-const ShelfCard = ({ navigation, totalProducts, totalCost, totalExpiry }) => {
+const ShelfCard = ({
+  navigation,
+  totalProducts,
+  totalCost,
+  totalExpiry,
+  totalProductSold,
+}) => {
   const [data, setData] = React.useState(DATA);
   const scrollXIndex = React.useRef(new Animated.Value(0)).current;
   const scrollXAnimated = React.useRef(new Animated.Value(0)).current;
   const [index, setIndex] = React.useState(0);
   const [cost, setCost] = React.useState(0);
+  const [sold, setSold] = React.useState([]);
+  const [expiredProductList, setExpiredProductList] = React.useState([]);
+
   const setActiveIndex = React.useCallback((activeIndex) => {
     scrollXIndex.setValue(activeIndex);
     setIndex(activeIndex);
@@ -236,14 +245,16 @@ const ShelfCard = ({ navigation, totalProducts, totalCost, totalExpiry }) => {
                     ) : null}
 
                     {item.id === "3" ? (
-                      <View style={styles.imageText}>
-                        <Text style={styles.subText}>20</Text>
+                      <View style={[styles.imageText, { borderColor: "#000" }]}>
+                        <Text style={[styles.subText, { color: "#000" }]}>
+                          {totalExpiry}
+                        </Text>
                       </View>
                     ) : null}
 
                     {item.id === "4" ? (
                       <View style={styles.imageText}>
-                        <Text style={styles.subText}>30</Text>
+                        <Text style={styles.subText}>{totalProductSold}</Text>
                       </View>
                     ) : null}
 
