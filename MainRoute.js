@@ -18,6 +18,7 @@ import {
   MyActivities,
   TodoScreen,
   SoldScreen,
+  GoogleSignInForm,
 } from "./screens";
 import AdScreen from "./AdScreen";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -96,6 +97,7 @@ const MainRoute = ({ navigation }) => {
           <Stack.Screen name="ScanProductId" component={ScanProductId} />
           <Stack.Screen name="SoldScreen" component={SoldScreen} />
           <Stack.Screen name="AddProduct" component={AddProduct} />
+          <Stack.Screen name="GoogleSignInForm" component={GoogleSignInForm} />
           <Stack.Screen
             name="ExpiredProductScreen"
             component={ExpiredProductScreen}

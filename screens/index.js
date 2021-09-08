@@ -18,6 +18,7 @@ import ExpiredProductScreen from "./ExpiredProductScreen";
 import SellerScreen from "./SellerScreen";
 import TodoScreen from "./TodoScreen";
 import SoldScreen from "./SoldScreen";
+import GoogleSignInForm from "./GoogleSignInForm";
 
 export {
   Home,
@@ -40,4 +41,5 @@ export {
   LoadingScreen,
   TodoScreen,
   SoldScreen,
+  GoogleSignInForm,
 };

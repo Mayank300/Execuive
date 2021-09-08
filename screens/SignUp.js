@@ -528,7 +528,11 @@ const SignUp = ({ navigation }) => {
               justifyContent: "center",
             }}
             onPress={() => {
-              handleSendCode();
+              if (user_contact !== "") {
+                handleSendCode();
+              } else {
+                return Alert.alert("Check Phone Number");
+              }
             }}
             disabled={showLoading ? true : false}
           >
