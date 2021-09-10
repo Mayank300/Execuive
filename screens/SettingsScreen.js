@@ -28,6 +28,8 @@ const SettingsScreen = ({ navigation }) => {
   const [image, setImage] = useState("#");
   const [expiryList, setExpiryList] = useState([]);
   const [cost, setCost] = useState([]);
+  const [quantity, setQuantity] = useState([]);
+  const [activity, setActivity] = React.useState([]);
 
   // const isFocused = useIsFocused();
 
@@ -36,6 +38,7 @@ const SettingsScreen = ({ navigation }) => {
   useEffect(() => {
     getUserDetails();
     getExpiryProducts();
+    getAllActivities();
     var email = firebase.auth().currentUser.email;
     fetchImage(email);
     const MINUTE_MS = 5000;
@@ -58,6 +61,20 @@ const SettingsScreen = ({ navigation }) => {
     } catch (error) {
       alert(error.message);
     }
+  };
+
+  const getAllActivities = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("activities")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var activityNumber = [];
+        snapshot.docs.map((doc) => {
+          var sold = doc.data();
+          activityNumber.push(sold);
+        });
+        setActivity(activityNumber);
+      });
   };
 
   const selectPicture = async () => {
@@ -122,6 +139,25 @@ const SettingsScreen = ({ navigation }) => {
     setCost(finalCost);
   };
 
+  const quantityConverter = (QUANTITY) => {
+    var productQuantityString = QUANTITY;
+    var productQuantityInteger = productQuantityString.map((i) => Number(i));
+    var totalProductQuantity = 0;
+    for (var i = 0; i < productQuantityInteger.length; i++) {
+      totalProductQuantity += productQuantityInteger[i];
+    }
+    totalProductQuantity = totalProductQuantity.toString();
+    var lastThree = totalProductQuantity.substring(totalProductQuantity.length - 3);
+    var otherNumbers = totalProductQuantity.substring(
+      0,
+      totalProductQuantity.length - 3
+    );
+    if (otherNumbers != "") lastThree = "," + lastThree;
+    var finalQuantity =
+      otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    setQuantity(finalQuantity);
+  };
+
   const getExpiryProducts = () => {
     var email = firebase.auth().currentUser.email;
     db.collection("products")
@@ -129,15 +165,19 @@ const SettingsScreen = ({ navigation }) => {
       .onSnapshot((snapshot) => {
         var DATA = [];
         var COST = [];
+        var QUNATITY = [];
         snapshot.docs.map((doc) => {
           var list = doc.data();
           var cost = doc.data().total_cost;
+          var quantity = doc.data().quantity;
           list["doc_id"] = doc.id;
           DATA.push(list);
           COST.push(cost);
+          QUNATITY.push(quantity);
         });
         setExpiryList(DATA);
         costConverter(COST);
+        quantityConverter(QUNATITY);
       });
   };
 
@@ -336,9 +376,9 @@ const SettingsScreen = ({ navigation }) => {
             navigation.navigate("ProductList");
           }}
         >
-          <Title>{expiryList.length}</Title>
+          <Title>{quantity}</Title>
           <Caption>
-            {expiryList.length === 1 ? "Total Product" : "Total Products"}
+            {quantity.length === 1 ? "Total Product" : "Total Products"}
           </Caption>
         </TouchableOpacity>
       </View>
@@ -402,7 +442,11 @@ const SettingsScreen = ({ navigation }) => {
             </View>
           </TouchableRipple>
 
-          <TouchableRipple onPress={() => {}}>
+          <TouchableRipple
+            onPress={() => {
+              navigation.navigate("MyActivities");
+            }}
+          >
             <View style={styles.menuItem}>
               <View
                 style={[
@@ -412,6 +456,23 @@ const SettingsScreen = ({ navigation }) => {
                   },
                 ]}
               >
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -5,
+                    right: -1,
+                    height: 21,
+                    width: 21,
+                    backgroundColor: COLORS.red,
+                    borderRadius: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontSize: 10, color: "#fff" }}>
+                    {activity.length}
+                  </Text>
+                </View>
                 <Icon
                   type="feather"
                   name="activity"

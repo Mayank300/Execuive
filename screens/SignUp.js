@@ -1,3 +1,7 @@
+import {
+  FirebaseRecaptchaVerifierModal,
+  FirebaseRecaptchaBanner,
+} from "expo-firebase-recaptcha";
 import React, { useRef } from "react";
 import {
   View,
@@ -13,18 +17,20 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  StatusBar,
+  ImageBackground,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  FirebaseRecaptchaVerifierModal,
-  FirebaseRecaptchaBanner,
-} from "expo-firebase-recaptcha";
 import * as firebase from "firebase";
 import db from "../firebase/config";
+import { Icon } from "react-native-elements";
 import { COLORS, SIZES, FONTS, icons, images } from "../constants";
-import { StatusBar } from "react-native";
+import { windowHeight } from "../constants/Dimensions";
+import * as Google from "expo-google-app-auth";
+import { SocialIcon } from "react-native-elements";
+import { windowWidth } from "../components/Dimensions";
+import { RFValue } from "react-native-responsive-fontsize";
 
-import { Icon } from "react-native-elements/dist/icons/Icon";
 const SignUp = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [areas, setAreas] = React.useState([]);
@@ -37,7 +43,8 @@ const SignUp = ({ navigation }) => {
   const [otpFormVisibility, setOtpFormVisibility] = React.useState(false);
   const [showLoading, setShowLoading] = React.useState(false);
   const [showOTPLoading, setShowOTPLoading] = React.useState(false);
-
+  const [showVerificationModal, setShowVerificationModal] =
+    React.useState(false);
   // otp Verification
 
   const recaptchaVerifier = React.useRef(null);
@@ -102,8 +109,9 @@ const SignUp = ({ navigation }) => {
                 selected_area: selectedArea,
                 google_login: false,
               });
-
-              navigation.replace("Login");
+              setUser_email(emailId);
+              setShowVerificationModal(true);
+              // navigation.replace("Login");
             })
             .catch((error) => {
               var errorCode = error.code;
@@ -124,6 +132,7 @@ const SignUp = ({ navigation }) => {
       );
       setVerificationId(verificationId);
       setOtpFormVisibility(true);
+
       alert("Verification code has been sent to your phone.");
       setShowLoading(false);
       otpRef.current.focus();
@@ -151,84 +160,6 @@ const SignUp = ({ navigation }) => {
     }
   };
 
-  function renderHeader() {
-    return (
-      <TouchableOpacity
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: SIZES.padding * 6,
-          paddingHorizontal: SIZES.padding * 2,
-        }}
-        onPress={() => navigation.replace("Login")}
-      >
-        <Image
-          source={icons.back}
-          resizeMode="contain"
-          style={{
-            width: 20,
-            height: 20,
-            tintColor: COLORS.white,
-          }}
-        />
-
-        <Text
-          style={{
-            marginLeft: SIZES.padding * 1.5,
-            color: COLORS.white,
-            ...FONTS.h4,
-          }}
-        >
-          Login In
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
-  function renderLogo() {
-    return (
-      <View
-        style={{
-          marginTop: SIZES.padding * 2,
-          height: 100,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          alignSelf: "center",
-        }}
-      >
-        <StatusBar hidden />
-        <Text
-          style={{
-            color: "#fff",
-            fontSize: 50,
-            fontWeight: "bold",
-            marginRight: -10,
-          }}
-        >
-          Execu
-        </Text>
-        <Image
-          source={images.wallieLogo}
-          resizeMode="contain"
-          style={{
-            width: "12%",
-          }}
-        />
-        <Text
-          style={{
-            color: "#fff",
-            fontSize: 50,
-            fontWeight: "bold",
-            marginLeft: -10,
-          }}
-        >
-          ive
-        </Text>
-      </View>
-    );
-  }
-
   function renderForm() {
     return (
       <View
@@ -239,11 +170,9 @@ const SignUp = ({ navigation }) => {
       >
         {/* Name */}
         <View style={{ marginTop: SIZES.padding * 3 }}>
-          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
-            Full Name
-          </Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Full Name</Text>
           <View style={{ position: "absolute", top: 40, left: 5 }}>
-            <Icon type="feather" name="user" size={28} color={COLORS.white} />
+            <Icon type="feather" name="user" size={28} color={"#5B5D69"} />
           </View>
           <TextInput
             returnKeyType="next"
@@ -256,26 +185,24 @@ const SignUp = ({ navigation }) => {
             onChangeText={(user_name) => setUser_name(user_name)}
             style={{
               marginVertical: SIZES.padding,
-              borderBottomColor: COLORS.white,
+              borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: COLORS.white,
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter Full Name"
-            placeholderTextColor={COLORS.white}
-            selectionColor={COLORS.white}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
           />
         </View>
 
         {/* mail Name */}
         <View style={{ marginTop: SIZES.padding * 3 }}>
-          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
-            Email
-          </Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Email</Text>
           <View style={{ position: "absolute", top: 40, left: 5 }}>
-            <Icon type="feather" name="mail" size={28} color={COLORS.white} />
+            <Icon type="feather" name="mail" size={28} color={"#5B5D69"} />
           </View>
           <TextInput
             returnKeyType="next"
@@ -289,24 +216,22 @@ const SignUp = ({ navigation }) => {
             keyboardType="email-address"
             style={{
               marginVertical: SIZES.padding,
-              borderBottomColor: COLORS.white,
+              borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: COLORS.white,
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter Email ID"
-            placeholderTextColor={COLORS.white}
-            selectionColor={COLORS.white}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
           />
         </View>
 
         {/* Phone Number & country code */}
         <View style={{ marginTop: SIZES.padding * 2 }}>
-          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
-            Phone Number
-          </Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Phone Number</Text>
 
           <View style={{ flexDirection: "row" }}>
             {/* Country Code */}
@@ -315,7 +240,7 @@ const SignUp = ({ navigation }) => {
                 width: 100,
                 height: 50,
                 marginHorizontal: 5,
-                borderBottomColor: COLORS.white,
+                borderBottomColor: "#1BB273",
                 borderBottomWidth: 1,
                 flexDirection: "row",
                 ...FONTS.body2,
@@ -328,7 +253,7 @@ const SignUp = ({ navigation }) => {
                   style={{
                     width: 10,
                     height: 10,
-                    tintColor: COLORS.white,
+                    tintColor: "#1BB273",
                   }}
                 />
               </View>
@@ -344,7 +269,7 @@ const SignUp = ({ navigation }) => {
               </View>
 
               <View style={{ justifyContent: "center", marginLeft: 5 }}>
-                <Text style={{ color: COLORS.white, ...FONTS.body3 }}>
+                <Text style={{ color: "#5B5D69", ...FONTS.body3 }}>
                   {selectedArea?.callingCode}
                 </Text>
               </View>
@@ -352,12 +277,7 @@ const SignUp = ({ navigation }) => {
 
             {/* Phone Number */}
             <View style={{ position: "absolute", top: 10, left: 120 }}>
-              <Icon
-                type="feather"
-                name="phone"
-                size={28}
-                color={COLORS.white}
-              />
+              <Icon type="feather" name="phone" size={28} color={"#5B5D69"} />
             </View>
             <TextInput
               returnKeyType="next"
@@ -373,37 +293,30 @@ const SignUp = ({ navigation }) => {
               style={{
                 flex: 1,
                 marginVertical: SIZES.padding,
-                borderBottomColor: COLORS.white,
+                borderBottomColor: "#1BB273",
                 borderBottomWidth: 1,
                 height: 40,
-                color: COLORS.white,
+                color: "#5B5D69",
                 ...FONTS.body3,
                 paddingLeft: 50,
               }}
               placeholder="Phone Number"
-              placeholderTextColor={COLORS.white}
-              selectionColor={COLORS.white}
+              placeholderTextColor={"#5B5D69"}
+              selectionColor={"#5B5D69"}
             />
           </View>
         </View>
 
         {/* Password */}
         <View style={{ marginTop: SIZES.padding * 2 }}>
-          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>
-            Password
-          </Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Password</Text>
           {showPassword ? (
             <View style={{ position: "absolute", top: 37, left: 5 }}>
-              <Icon
-                type="feather"
-                name="unlock"
-                size={28}
-                color={COLORS.white}
-              />
+              <Icon type="feather" name="unlock" size={28} color={"#5B5D69"} />
             </View>
           ) : (
             <View style={{ position: "absolute", top: 37, left: 5 }}>
-              <Icon type="feather" name="lock" size={28} color={COLORS.white} />
+              <Icon type="feather" name="lock" size={28} color={"#5B5D69"} />
             </View>
           )}
           <TextInput
@@ -412,16 +325,16 @@ const SignUp = ({ navigation }) => {
             onChangeText={(user_password) => setUser_password(user_password)}
             style={{
               marginVertical: SIZES.padding,
-              borderBottomColor: COLORS.white,
+              borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: COLORS.white,
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter Password"
-            placeholderTextColor={COLORS.white}
-            selectionColor={COLORS.white}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity
@@ -439,7 +352,7 @@ const SignUp = ({ navigation }) => {
               style={{
                 height: 20,
                 width: 20,
-                tintColor: COLORS.white,
+                tintColor: "#5B5D69",
               }}
             />
           </TouchableOpacity>
@@ -454,16 +367,17 @@ const SignUp = ({ navigation }) => {
         style={{
           marginTop: SIZES.padding - 25,
           marginHorizontal: SIZES.padding * 3,
+          marginBottom: 200,
         }}
       >
         <View style={{ marginTop: SIZES.padding * 2 }}>
-          <Text style={{ color: COLORS.lightGreen, ...FONTS.body3 }}>OTP</Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>OTP</Text>
           <View style={{ position: "absolute", top: 35, left: 10 }}>
             <Icon
               type="feather"
               name="message-square"
               size={28}
-              color={COLORS.white}
+              color={"#5B5D69"}
             />
           </View>
           <TextInput
@@ -475,16 +389,16 @@ const SignUp = ({ navigation }) => {
             style={{
               flex: 1,
               marginVertical: SIZES.padding,
-              borderBottomColor: COLORS.white,
+              borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: COLORS.white,
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter OTP"
-            placeholderTextColor={COLORS.white}
-            selectionColor={COLORS.white}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
           />
         </View>
 
@@ -518,7 +432,13 @@ const SignUp = ({ navigation }) => {
   function renderButton() {
     return (
       <View>
-        <View style={{ margin: SIZES.padding * 3 }}>
+        <View
+          style={{
+            margin: SIZES.padding * 3,
+            height: !otpFormVisibility ? 300 : 80,
+            marginBottom: !otpFormVisibility ? 150 : 0,
+          }}
+        >
           <TouchableOpacity
             style={{
               height: 60,
@@ -603,29 +523,254 @@ const SignUp = ({ navigation }) => {
     );
   }
 
+  function renderVerificationModal() {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showVerificationModal}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            height: windowHeight,
+            width: windowWidth,
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View
+            style={{
+              height: windowHeight / 1.6,
+              width: SIZES.width * 0.8,
+              backgroundColor: COLORS.white,
+              borderRadius: SIZES.radius,
+              justifyContent: "center",
+              borderRadius: 40,
+            }}
+          >
+            <ImageBackground
+              source={require("../assets/verification.jpeg")}
+              style={{
+                flex: 1,
+                resizeMode: "cover",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 40,
+                overflow: "hidden",
+              }}
+            >
+              <Icon
+                type="feather"
+                name="x"
+                size={25}
+                style={{ marginLeft: 230, marginTop: 0 }}
+                onPress={() => setShowVerificationModal(false)}
+              />
+              <Image
+                source={require("../assets/mail.png")}
+                style={{ width: 100, height: 100, marginBottom: 50 }}
+              />
+              <Text
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.h1,
+                  textAlign: "center",
+                }}
+              >
+                Thank you for registering!
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.h4,
+                  textAlign: "center",
+                  marginTop: 20,
+                }}
+              >
+                We're glad you are here!
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.h4,
+                  textAlign: "center",
+                }}
+              >
+                Before you start exploring, we
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.h4,
+                  textAlign: "center",
+                }}
+              >
+                just sent you the email
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.h4,
+                  textAlign: "center",
+                  marginBottom: 50,
+                }}
+              >
+                confirmation
+              </Text>
+              <TouchableOpacity
+                style={{
+                  height: 60,
+                  backgroundColor: COLORS.black,
+                  borderRadius: SIZES.radius / 1.5,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                disabled={showLoading ? true : false}
+                onPress={() => {
+                  firebase
+                    .auth()
+                    .currentUser.sendEmailVerification()
+                    .then(() => {
+                      Alert.alert("Check Email And Verify It To Login");
+                    });
+                }}
+              >
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontSize: RFValue(15),
+                    marginHorizontal: 20,
+                  }}
+                >
+                  Resend email conformation
+                </Text>
+              </TouchableOpacity>
+            </ImageBackground>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : null}
-      style={{ flex: 1 }}
+      style={{ flex: 1, flexDirection: "column" }}
     >
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
         attemptInvisibleVerification={attemptInvisibleVerification}
       />
-      <LinearGradient
-        colors={[COLORS.lime, COLORS.emerald]}
-        style={{ flex: 1 }}
+      <View
+        style={{ flex: 1, backgroundColor: "#36B273", flexDirection: "column" }}
       >
-        <ScrollView>
-          {renderHeader()}
-          {renderLogo()}
-          {renderForm()}
-          {renderButton()}
-          {otpFormVisibility ? otpForm() : null}
-        </ScrollView>
-      </LinearGradient>
+        <Image
+          source={require("../assets/side.jpeg")}
+          style={{
+            position: "absolute",
+            top: -50,
+            left: -70,
+            height: 500,
+          }}
+        />
+        <Image
+          source={require("../assets/side2.png")}
+          style={{
+            position: "absolute",
+            top: -370,
+            left: 160,
+            transform: [{ rotate: "180deg" }],
+          }}
+        />
+        <View
+          style={Platform.OS === "ios" ? { marginTop: 70 } : { marginTop: 40 }}
+        >
+          <TouchableOpacity
+            style={{
+              marginLeft: 30,
+              marginTop: 0,
+              marginBottom: 30,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+            onPress={() => navigation.replace("Login")}
+          >
+            <Icon
+              type="feather"
+              name="arrow-left"
+              size={35}
+              color={"#5B5D69"}
+            />
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 30,
+                fontWeight: "700",
+                width: windowWidth / 1.5,
+                marginLeft: 5,
+              }}
+            >
+              Login
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: "#F6F8F6",
+            height: windowHeight,
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            overflow: "hidden",
+            marginTop: windowHeight / 25,
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              color: "#5B5D69",
+              fontSize: RFValue(27),
+              marginTop: 25,
+              fontWeight: "bold",
+            }}
+          >
+            Make your account for free!
+          </Text>
+          <View
+            style={{
+              backgroundColor: "#FFFFFF",
+              height: windowHeight,
+              borderTopLeftRadius: 40,
+              borderTopRightRadius: 40,
+              overflow: "hidden",
+              marginTop: windowHeight / 22,
+            }}
+          >
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+              style={{
+                marginBottom: 100,
+              }}
+            >
+              <View
+                style={{
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>{renderForm()}</View>
+                {renderButton()}
+              </View>
+              {otpFormVisibility ? otpForm() : null}
+            </ScrollView>
+          </View>
+        </View>
+      </View>
       {renderAreaCodesModal()}
+      {renderVerificationModal()}
     </KeyboardAvoidingView>
   );
 };

@@ -43,6 +43,7 @@ const theme = {
 const Stack = createStackNavigator();
 
 const MainRoute = ({ navigation }) => {
+  const [showApp, setShowApp] = React.useState(false);
   React.useEffect(() => {
     const interval = setInterval(() => {
       NetInfo.addEventListener((networkState) => {
@@ -61,8 +62,6 @@ const MainRoute = ({ navigation }) => {
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
   });
-
-  const [showApp, setShowApp] = React.useState(false);
 
   if (!loaded) {
     return null;

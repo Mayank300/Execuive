@@ -27,13 +27,14 @@ export default class HomeComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      quantity: 0,
       expiryList: [],
       selectedDate: "week",
       cost: [],
       expDate: [],
       refreshing: false,
       expiredProducts: [],
-      soldProducts: [],
+      soldProducts: 0,
     };
     this.productRf = null;
   }
@@ -42,7 +43,45 @@ export default class HomeComponent extends Component {
     this.getExpiryProducts();
     this.getExpiredProductList();
     this.getSoldProducts();
+    this.getQuantity();
   }
+
+  getQuantity = () => {
+    var email = firebase.auth().currentUser.email;
+    db.collection("products")
+      .where("user_id", "==", email)
+      .onSnapshot((snapshot) => {
+        var QUNATITY = [];
+        snapshot.docs.map((doc) => {
+          var list = doc.data();
+          var quantity = doc.data().quantity;
+          list["doc_id"] = doc.id;
+          QUNATITY.push(quantity);
+        });
+        this.quantityConverter(QUNATITY);
+      });
+  };
+
+  quantityConverter = (QUANTITY) => {
+    var productQuantityString = QUANTITY;
+    var productQuantityInteger = productQuantityString.map((i) => Number(i));
+    var totalProductQuantity = 0;
+    for (var i = 0; i < productQuantityInteger.length; i++) {
+      totalProductQuantity += productQuantityInteger[i];
+    }
+    totalProductQuantity = totalProductQuantity.toString();
+    var lastThree = totalProductQuantity.substring(
+      totalProductQuantity.length - 3
+    );
+    var otherNumbers = totalProductQuantity.substring(
+      0,
+      totalProductQuantity.length - 3
+    );
+    if (otherNumbers != "") lastThree = "," + lastThree;
+    var finalQuantity =
+      otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    this.setState({ quantity: finalQuantity });
+  };
 
   getExpiryProducts = () => {
     var email = firebase.auth().currentUser.email;
@@ -363,10 +402,31 @@ export default class HomeComponent extends Component {
         snapshot.docs.map((doc) => {
           var list = doc.data();
           list["doc_id"] = doc.id;
-          DATA.push(list);
+          DATA.push(list.quantity);
         });
-        this.setState({ soldProducts: DATA.length });
+        this.soldConverter(DATA);
       });
+  };
+
+  soldConverter = (QUANTITY) => {
+    var productQuantityString = QUANTITY;
+    var productQuantityInteger = productQuantityString.map((i) => Number(i));
+    var totalProductQuantity = 0;
+    for (var i = 0; i < productQuantityInteger.length; i++) {
+      totalProductQuantity += productQuantityInteger[i];
+    }
+    totalProductQuantity = totalProductQuantity.toString();
+    var lastThree = totalProductQuantity.substring(
+      totalProductQuantity.length - 3
+    );
+    var otherNumbers = totalProductQuantity.substring(
+      0,
+      totalProductQuantity.length - 3
+    );
+    if (otherNumbers != "") lastThree = "," + lastThree;
+    var finalQuantity =
+      otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    this.setState({ soldProducts: finalQuantity });
   };
 
   getExpiredProductList = () => {
@@ -412,7 +472,7 @@ export default class HomeComponent extends Component {
             {this.props.renderHeader}
             <View style={{ height: 400 }}>
               <ShelfCard
-                totalProducts={this.state.expiryList.length}
+                totalProducts={this.state.quantity}
                 totalCost={this.state.cost}
                 totalExpiry={this.state.expiredProducts}
                 totalProductSold={this.state.soldProducts}

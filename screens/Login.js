@@ -33,8 +33,7 @@ const Login = ({ navigation }) => {
   const [user_password, setUser_password] = React.useState("");
   const [showLoading, setShowLoading] = React.useState(false);
   const [googleSubmitting, setGoogleSubmitting] = React.useState(false);
-  const [showVerificationModal, setShowVerificationModal] =
-    React.useState(false);
+
   const passwordRef = useRef(null);
 
   //  refs make excel sheet - quantity, name, productId,
@@ -158,9 +157,9 @@ const Login = ({ navigation }) => {
         }}
       >
         <View style={{ marginTop: SIZES.padding * 3 }}>
-          <Text style={{ color: "#5B5D69", ...FONTS.body3 }}>Email</Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Email</Text>
           <View style={{ position: "absolute", top: 40, left: 5 }}>
-            <Icon type="feather" name="mail" size={28} color={"#1BB273"} />
+            <Icon type="feather" name="mail" size={28} color={"#5B5D69"} />
           </View>
           <TextInput
             returnKeyType="next"
@@ -176,26 +175,26 @@ const Login = ({ navigation }) => {
               borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: "#1BB273",
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter Email ID"
-            placeholderTextColor={"#1BB273"}
-            selectionColor={"#1BB273"}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
           />
         </View>
 
         {/* Password */}
         <View style={{ marginTop: SIZES.padding * 2 }}>
-          <Text style={{ color: "#5B5D69", ...FONTS.body3 }}>Password</Text>
+          <Text style={{ color: "#1BB273", ...FONTS.body3 }}>Password</Text>
           {showPassword ? (
             <View style={{ position: "absolute", top: 37, left: 5 }}>
-              <Icon type="feather" name="unlock" size={28} color={"#1BB273"} />
+              <Icon type="feather" name="unlock" size={28} color={"#5B5D69"} />
             </View>
           ) : (
             <View style={{ position: "absolute", top: 37, left: 5 }}>
-              <Icon type="feather" name="lock" size={28} color={"#1BB273"} />
+              <Icon type="feather" name="lock" size={28} color={"#5B5D69"} />
             </View>
           )}
           <TextInput
@@ -207,13 +206,13 @@ const Login = ({ navigation }) => {
               borderBottomColor: "#1BB273",
               borderBottomWidth: 1,
               height: 40,
-              color: "#1BB273",
+              color: "#5B5D69",
               ...FONTS.body3,
               paddingLeft: 50,
             }}
             placeholder="Enter Password"
-            placeholderTextColor={"#1BB273"}
-            selectionColor={"#1BB273"}
+            placeholderTextColor={"#5B5D69"}
+            selectionColor={"#5B5D69"}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity
@@ -231,7 +230,7 @@ const Login = ({ navigation }) => {
               style={{
                 height: 20,
                 width: 20,
-                tintColor: COLORS.white,
+                tintColor: "#5B5D69",
               }}
             />
           </TouchableOpacity>
@@ -242,10 +241,18 @@ const Login = ({ navigation }) => {
 
   function renderButton() {
     return (
-      <View style={{ margin: SIZES.padding * 3 }}>
+      <View
+        style={{
+          margin: SIZES.padding * 3,
+          height: 400,
+          marginBottom: 150,
+        }}
+      >
+        {/* forgot password */}
         <TouchableOpacity
           style={{
             marginBottom: 30,
+            alignItems: "flex-end",
           }}
           onPress={() => navigation.replace("ForgotPassword")}
         >
@@ -253,28 +260,40 @@ const Login = ({ navigation }) => {
             Forgot password?
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
+        {/* login */}
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={["#73f5be", "#02f58f", "#73f5be"]}
           style={{
+            backgroundColor: "#4dccc6",
             height: 60,
-            backgroundColor: "#1BB273",
             borderRadius: SIZES.radius,
             alignItems: "center",
             justifyContent: "center",
           }}
-          disabled={showLoading ? true : false}
-          onPress={() => {
-            // login(user_email, user_password);
-            setShowVerificationModal(true);
-          }}
         >
-          {showLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Login</Text>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              width: windowWidth,
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+            disabled={showLoading ? true : false}
+            onPress={() => {
+              login(user_email, user_password);
+            }}
+          >
+            {showLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={{ color: COLORS.white, ...FONTS.h3 }}>Login</Text>
+            )}
+          </TouchableOpacity>
+        </LinearGradient>
 
+        {/* google */}
         <View
           style={{
             marginTop: 30,
@@ -294,10 +313,10 @@ const Login = ({ navigation }) => {
             onPress={() => {
               handleGoogleSignIn();
             }}
-            style={{ height: 50, width: windowWidth / 1.2 }}
+            style={{ height: 60, width: windowWidth / 1.2 }}
           />
         </View>
-
+        {/* signup */}
         <TouchableOpacity
           style={{
             marginTop: 30,
@@ -320,132 +339,6 @@ const Login = ({ navigation }) => {
     );
   }
 
-  function renderVerificationModal() {
-    return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showVerificationModal}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            height: windowHeight,
-            width: windowWidth,
-            backgroundColor: "rgba(0,0,0,0.7)",
-          }}
-        >
-          <View
-            style={{
-              height: windowHeight / 1.6,
-              width: SIZES.width * 0.8,
-              backgroundColor: COLORS.white,
-              borderRadius: SIZES.radius,
-              justifyContent: "center",
-              borderRadius: 40,
-            }}
-          >
-            <ImageBackground
-              source={require("../assets/verification.jpeg")}
-              style={{
-                flex: 1,
-                resizeMode: "cover",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 40,
-                overflow: "hidden",
-              }}
-            >
-              <Icon
-                type="feather"
-                name="x"
-                size={25}
-                style={{ marginLeft: 230, marginTop: 0 }}
-                onPress={() => setShowVerificationModal(false)}
-              />
-              <Image
-                source={require("../assets/mail.png")}
-                style={{ width: 100, height: 100, marginBottom: 50 }}
-              />
-              <Text
-                style={{
-                  color: COLORS.white,
-                  ...FONTS.h1,
-                  textAlign: "center",
-                }}
-              >
-                Thank you for registering!
-              </Text>
-              <Text
-                style={{
-                  color: COLORS.white,
-                  ...FONTS.h4,
-                  textAlign: "center",
-                  marginTop: 20,
-                }}
-              >
-                We're glad you are here!
-              </Text>
-              <Text
-                style={{
-                  color: COLORS.white,
-                  ...FONTS.h4,
-                  textAlign: "center",
-                }}
-              >
-                Before you start exploring, we
-              </Text>
-              <Text
-                style={{
-                  color: COLORS.white,
-                  ...FONTS.h4,
-                  textAlign: "center",
-                }}
-              >
-                just sent you the email
-              </Text>
-              <Text
-                style={{
-                  color: COLORS.white,
-                  ...FONTS.h4,
-                  textAlign: "center",
-                  marginBottom: 50,
-                }}
-              >
-                confirmation
-              </Text>
-              <TouchableOpacity
-                style={{
-                  height: 60,
-                  backgroundColor: COLORS.black,
-                  borderRadius: SIZES.radius / 1.5,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                disabled={showLoading ? true : false}
-                onPress={() => {
-                  setShowVerificationModal(true);
-                }}
-              >
-                <Text
-                  style={{
-                    color: COLORS.white,
-                    fontSize: RFValue(15),
-                    marginHorizontal: 20,
-                  }}
-                >
-                  Resend email conformation
-                </Text>
-              </TouchableOpacity>
-            </ImageBackground>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : null}
@@ -460,7 +353,6 @@ const Login = ({ navigation }) => {
             position: "absolute",
             top: -50,
             left: -70,
-            widht: 30,
             height: 500,
           }}
         />
@@ -505,7 +397,14 @@ const Login = ({ navigation }) => {
               marginTop: windowHeight / 22,
             }}
           >
-            <ScrollView>
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+              style={{
+                marginTop: -30,
+                marginBottom: 100,
+              }}
+            >
               <View
                 style={{
                   justifyContent: "space-between",
@@ -515,7 +414,6 @@ const Login = ({ navigation }) => {
                 {renderButton()}
               </View>
             </ScrollView>
-            {renderVerificationModal()}
           </View>
         </View>
       </View>

@@ -42,7 +42,7 @@ const Home = ({ navigation }) => {
     getUserDetails();
     getNotifications();
     getSoldProducts();
-    getProductList()
+    getProductList();
     getAllActivities();
     fetchImage(email);
     var email = firebase.auth().currentUser.email;
@@ -58,8 +58,7 @@ const Home = ({ navigation }) => {
     var DATA = [];
     var expiredProducts = [];
 
-    db
-      .collection("products")
+    db.collection("products")
       .where("user_id", "==", email)
       .onSnapshot((snapshot) => {
         snapshot.docs.map((doc) => {
@@ -73,7 +72,7 @@ const Home = ({ navigation }) => {
             expiredProducts.push(product);
           }
         });
-        setExpiredProductList(expiredProducts)
+        setExpiredProductList(expiredProducts);
       });
   };
 
@@ -280,157 +279,6 @@ const Home = ({ navigation }) => {
               Add
             </Text>
           </TouchableOpacity>
-          {/* wallet */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => navigation.navigate("Bill")}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightyellow,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Image
-                source={icons.wallet}
-                resizeMode="contain"
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.yellow,
-                }}
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  top: -5,
-                  right: -1,
-                  height: 21,
-                  width: 21,
-                  backgroundColor: COLORS.red,
-                  borderRadius: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 10, color: "#fff" }}>99</Text>
-              </View>
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Bill
-            </Text>
-          </TouchableOpacity>
-          {/* MyActivities */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => {
-              navigation.navigate("MyActivities");
-            }}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightGreen,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon type="feather" name="activity" color="#66D59A" size={30} />
-              <View
-                style={{
-                  position: "absolute",
-                  top: -5,
-                  right: -1,
-                  height: 21,
-                  width: 21,
-                  backgroundColor: COLORS.red,
-                  borderRadius: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 10, color: "#fff" }}>
-                  {activity.length}
-                </Text>
-              </View>
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Activities
-            </Text>
-          </TouchableOpacity>
-          {/* graph */}
-          <TouchableOpacity
-            style={{
-              marginBottom: SIZES.padding * 2,
-              width: 60,
-              alignItems: "center",
-            }}
-            onPress={() => navigation.navigate("Graph")}
-          >
-            <View
-              style={{
-                height: 50,
-                width: 50,
-                marginBottom: 5,
-                borderRadius: 20,
-                backgroundColor: COLORS.lightRed,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon
-                type="feather"
-                name="bar-chart-2"
-                color="#FF4134"
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  top: -5,
-                  right: -1,
-                  height: 21,
-                  width: 21,
-                  backgroundColor: COLORS.red,
-                  borderRadius: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ fontSize: 10, color: "#fff" }}>99</Text>
-              </View>
-            </View>
-            <Text
-              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
-            >
-              Graph
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {/* Expired */}
           <TouchableOpacity
             style={{
@@ -457,7 +305,7 @@ const Home = ({ navigation }) => {
                 color="#FF4134"
                 size={26}
               />
-               <View
+              <View
                 style={{
                   position: "absolute",
                   top: -5,
@@ -481,6 +329,44 @@ const Home = ({ navigation }) => {
               Expired
             </Text>
           </TouchableOpacity>
+          {/* graph */}
+          <TouchableOpacity
+            style={{
+              marginBottom: SIZES.padding * 2,
+              width: 60,
+              alignItems: "center",
+            }}
+            onPress={() => navigation.navigate("Graph")}
+          >
+            <View
+              style={{
+                height: 50,
+                width: 50,
+                marginBottom: 5,
+                borderRadius: 20,
+                backgroundColor: COLORS.lightGreen,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon
+                type="feather"
+                name="bar-chart-2"
+                color="#00BA63"
+                style={{
+                  height: 20,
+                  width: 20,
+                }}
+              />
+            </View>
+            <Text
+              style={{ textAlign: "center", flexWrap: "wrap", ...FONTS.body4 }}
+            >
+              Graph
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {/* Sellers */}
           <TouchableOpacity
             style={{

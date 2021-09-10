@@ -254,7 +254,9 @@ const ShelfCard = ({
 
                     {item.id === "4" ? (
                       <View style={styles.imageText}>
-                        <Text style={styles.subText}>{totalProductSold}</Text>
+                        <Text style={[styles.subText, { color: "#fff" }]}>
+                          {totalProductSold}
+                        </Text>
                       </View>
                     ) : null}
 
@@ -303,9 +305,9 @@ const styles = StyleSheet.create({
     right: 30,
     borderWidth: 1,
     borderRadius: 20,
-    width: 40,
-    height: 40,
-    borderColor: "#fff",
+    width: 50,
+    height: 50,
+    borderColor: "#000",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -328,7 +330,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     textAlign: "right",
-    color: "#fff",
+    color: "#000",
     fontWeight: "bold",
     fontSize: RFValue(23),
   },
