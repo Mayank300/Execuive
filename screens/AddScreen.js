@@ -7,7 +7,7 @@ const Tab = createMaterialTopTabNavigator();
 import ScanProduct from "../components/ScanProduct";
 import AddProduct from "../components/AddProduct";
 
-function AddScreen({ barCodeData }) {
+function AddScreen() {
   return (
     <Tab.Navigator
       initialRouteName="Add"

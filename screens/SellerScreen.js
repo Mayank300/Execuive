@@ -143,8 +143,8 @@ export default class SellerScreen extends Component {
     });
   }
 
-  updateSeller = (id) => {
-    db.collection("seller").doc(id).update({
+  updateSeller = () => {
+    db.collection("seller").doc(this.state.doc_id).update({
       seller_name: this.state.sellerName,
       seller_email: this.state.sellerEmail,
       seller_number: this.state.sellerNumber,
@@ -296,11 +296,12 @@ export default class SellerScreen extends Component {
                 >
                   <TouchableOpacity
                     onPress={() => {
-                      this.updateSeller(item.doc_id);
                       this.setState({
                         showEditModal: false,
+                        doc_id: item.doc_id,
                         color: this.backgroundColors[0],
                       });
+                      this.updateSeller();
                       {
                         Platform.OS === "ios"
                           ? Alert.alert(

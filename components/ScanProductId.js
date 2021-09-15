@@ -6,13 +6,17 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { COLORS, FONTS, SIZES, icons, images } from "../constants";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
 import ToastAnimation from "./ToastAnimation";
+import { RFValue } from "react-native-responsive-fontsize";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+const Tab = createMaterialTopTabNavigator();
 
-const ScanProductId = ({ navigation }) => {
+const ScanProductIdScreen = ({ navigation }) => {
   const [scanned, setScanned] = React.useState(false);
   const [data, setData] = React.useState("");
   const [messages, setMessages] = useState([]);
@@ -142,5 +146,26 @@ const ScanProductId = ({ navigation }) => {
     </View>
   );
 };
+
+function ScanProductId() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Scan"
+      tabBarOptions={{
+        activeTintColor: "#000",
+        labelStyle: { fontSize: RFValue(18) },
+      }}
+      style={{
+        marginTop: Platform.OS === "ios" ? 30 : null,
+      }}
+    >
+      <Tab.Screen
+        name="Scan"
+        component={ScanProductIdScreen}
+        options={{ tabBarLabel: "Scan" }}
+      />
+    </Tab.Navigator>
+  );
+}
 
 export default ScanProductId;

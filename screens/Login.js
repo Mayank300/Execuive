@@ -55,12 +55,13 @@ const Login = ({ navigation }) => {
             "Succesfully Connected!",
             "Thank you for creating your account"
           );
-          navigation.replace("GoogleSignInForm", {
-            user_name: name,
-            email_id: email,
-            photo_url: photoUrl,
-            google_login: true,
-          });
+          onSignIn(result);
+          // navigation.replace("GoogleSignInForm", {
+          //   user_name: name,
+          //   email_id: email,
+          //   photo_url: photoUrl,
+          //   google_login: true,
+          // });
         } else {
           Alert.alert("Error Connecting !", "Google signin was canclled");
         }
@@ -71,6 +72,72 @@ const Login = ({ navigation }) => {
         setGoogleSubmitting(false);
         Alert.alert("Error Connecting !", "Chek you network connection!");
       });
+  };
+
+  const isUserEqual = (googleUser, firebaseUser) => {
+    if (firebaseUser) {
+      var providerData = firebaseUser.providerData;
+      for (var i = 0; i < providerData.length; i++) {
+        if (
+          providerData[i].providerId ===
+            firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
+          providerData[i].uid === googleUser.getBasicProfile().getId()
+        ) {
+          // We don't need to reauth the Firebase connection.
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const onSignIn = (googleUser) => {
+    console.log("Google Auth Response", googleUser);
+    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+    const unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
+      unsubscribe();
+      // Check if we are already signed-in Firebase with the correct user.
+      if (!isUserEqual(googleUser, firebaseUser)) {
+        // Build Firebase credential with the Google ID token.
+        const credential = firebase.auth.GoogleAuthProvider.credential(
+          googleUser.idToken,
+          googleUser.accessToken
+        );
+
+        // Sign in with credential from the Google user.
+        firebase
+          .auth()
+          .signInWithCredential(credential)
+          .then((result) => {
+            console.log(result);
+            try {
+              db.collection("users").add({
+                user_name: result.additionalUserInfo.profile.name,
+                email_id: result.user.email,
+                contact: "",
+                selected_area: "",
+                google_login: true,
+              });
+            } catch (error) {
+              console.log(error);
+            }
+            //create document in users collections
+          })
+          .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.email;
+            console.log(error);
+            // The credential that was used.
+            // const credential = GoogleAuthProvider.credentialFromError(error);
+            // ...
+          });
+      } else {
+        console.log("User already signed-in Firebase.");
+      }
+    });
   };
 
   const login = (emailId, password) => {
