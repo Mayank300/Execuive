@@ -507,7 +507,9 @@ export default class ProductList extends React.Component {
     var fixedQuantityString = item.quantity;
     var fixedQuantityInteger = parseInt(fixedQuantityString);
     const { QuantityCount } = this.state;
+
     var quantity = parseInt(QuantityCount);
+    console.log(quantity);
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <Modal
@@ -595,7 +597,7 @@ export default class ProductList extends React.Component {
                       this.setState({
                         quantityModalVisible: false,
                       });
-                      this.markAsSold(item, quantity);
+                      this.markAsSold(item, this.state.QuantityCount);
                     }}
                     style={{
                       flexDirection: "row",
@@ -666,28 +668,35 @@ export default class ProductList extends React.Component {
   };
 
   markAsSold = (item, quantity) => {
+    var Orginialquantity = parseInt(this.state.OriginalQuantityCount);
+    var SoldUpdatedQuantity = parseInt(quantity);
+    console.log(Orginialquantity);
+    console.log(SoldUpdatedQuantity);
+
     db.collection("sold").add({
       product_name: item.product_name,
-      quantity: quantity,
+      quantity: SoldUpdatedQuantity,
       total_cost: item.total_cost,
       exp_date: item.exp_date,
       product_id: item.product_id,
       user_id: item.user_id,
       product_color: item.product_color,
       date_added: item.date_added,
-      original_product_quantity: this.state.OriginalQuantityCount - quantity,
+      original_product_quantity: Orginialquantity - SoldUpdatedQuantity,
       original_doc_id: item.doc_id,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
-    this.setState({
-      OriginalQuantityCount: 0,
-    });
-    var restQuantity = parseInt(item.quantity);
+
+    // var restQuantity = parseInt(item.quantity);
     db.collection("products")
       .doc(item.doc_id)
       .update({
-        quantity: restQuantity - quantity,
+        quantity: Orginialquantity - SoldUpdatedQuantity,
       });
+
+    this.setState({
+      OriginalQuantityCount: 0,
+    });
   };
 
   componentWillUnmount() {

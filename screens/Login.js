@@ -26,6 +26,16 @@ import * as Google from "expo-google-app-auth";
 import { SocialIcon } from "react-native-elements";
 import { windowWidth } from "../components/Dimensions";
 import { RFValue } from "react-native-responsive-fontsize";
+import * as Notification from "expo-notifications";
+
+Notification.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldPlaySound: true,
+      shouldShowAlert: true,
+    };
+  },
+});
 
 const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -36,7 +46,17 @@ const Login = ({ navigation }) => {
 
   const passwordRef = useRef(null);
 
-  //  refs make excel sheet - quantity, name, productId,
+  const loginNotification = (title) => {
+    Notification.scheduleNotificationAsync({
+      content: {
+        title: `${title}`,
+        body: "Thank you",
+      },
+      trigger: {
+        seconds: 3,
+      },
+    });
+  };
 
   const handleGoogleSignIn = () => {
     setGoogleSubmitting(true);
@@ -56,12 +76,6 @@ const Login = ({ navigation }) => {
             "Thank you for creating your account"
           );
           onSignIn(result);
-          // navigation.replace("GoogleSignInForm", {
-          //   user_name: name,
-          //   email_id: email,
-          //   photo_url: photoUrl,
-          //   google_login: true,
-          // });
         } else {
           Alert.alert("Error Connecting !", "Google signin was canclled");
         }
@@ -83,7 +97,6 @@ const Login = ({ navigation }) => {
             firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
           providerData[i].uid === googleUser.getBasicProfile().getId()
         ) {
-          // We don't need to reauth the Firebase connection.
           return true;
         }
       }
@@ -93,18 +106,13 @@ const Login = ({ navigation }) => {
 
   const onSignIn = (googleUser) => {
     console.log("Google Auth Response", googleUser);
-    // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     const unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
       unsubscribe();
-      // Check if we are already signed-in Firebase with the correct user.
       if (!isUserEqual(googleUser, firebaseUser)) {
-        // Build Firebase credential with the Google ID token.
         const credential = firebase.auth.GoogleAuthProvider.credential(
           googleUser.idToken,
           googleUser.accessToken
         );
-
-        // Sign in with credential from the Google user.
         firebase
           .auth()
           .signInWithCredential(credential)
@@ -121,18 +129,12 @@ const Login = ({ navigation }) => {
             } catch (error) {
               console.log(error);
             }
-            //create document in users collections
           })
           .catch((error) => {
-            // Handle Errors here.
             const errorCode = error.code;
             const errorMessage = error.message;
-            // The email of the user's account used.
             const email = error.email;
             console.log(error);
-            // The credential that was used.
-            // const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
           });
       } else {
         console.log("User already signed-in Firebase.");
@@ -149,9 +151,9 @@ const Login = ({ navigation }) => {
         setShowLoading(false);
         if (authUser.user.emailVerified) {
           navigation.replace("Home");
-          return alert("Logged in successfully !");
+          loginNotification("Logged in successfully!");
         } else {
-          return alert("Verify Email before login !");
+          return alert("Verify Email before login!");
         }
       })
       .catch((error) => {
