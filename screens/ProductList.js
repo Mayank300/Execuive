@@ -730,36 +730,6 @@ export default class ProductList extends React.Component {
               }
             >
               <Animated.View animation="fadeIn" duration={1100}>
-                <View
-                  style={{
-                    height: 50,
-                    alignItems: "center",
-                  }}
-                >
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      position: "absolute",
-                      right: 20,
-                    }}
-                    onPress={() => {}}
-                  >
-                    <Text
-                      style={{
-                        color: "#554A4C",
-                        fontSize: 25,
-                        fontWeight: "700",
-                        marginRight: 10,
-                      }}
-                    >
-                      Save As Pdf
-                    </Text>
-                    <Icon type="feather" name="file-text" size={30} />
-                  </TouchableOpacity>
-                </View>
-              </Animated.View>
-              <Animated.View animation="fadeIn" duration={1100}>
                 <SearchBar
                   round
                   searchIcon={{ size: 24 }}
