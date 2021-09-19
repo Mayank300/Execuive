@@ -18,6 +18,8 @@ import ExpiredProductScreen from "./ExpiredProductScreen";
 import SellerScreen from "./SellerScreen";
 import TodoScreen from "./TodoScreen";
 import SoldScreen from "./SoldScreen";
+import MarkAsSold from "./MarkAsSold";
+import SoldProductInfo from "./SoldProductInfo";
 
 export {
   Home,
@@ -40,4 +42,6 @@ export {
   LoadingScreen,
   TodoScreen,
   SoldScreen,
+  MarkAsSold,
+  SoldProductInfo,
 };

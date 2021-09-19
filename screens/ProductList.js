@@ -1,10 +1,10 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { Component } from "react";
 import {
-  StyleSheet,
-  Text,
   View,
+  Button,
+  Text,
   TouchableOpacity,
+  StyleSheet,
   FlatList,
   Platform,
   Alert,
@@ -15,35 +15,32 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
 } from "react-native";
-import moment from "moment";
+import RBSheet from "react-native-raw-bottom-sheet";
+import { LinearGradient } from "expo-linear-gradient";
 import { windowHeight, windowWidth } from "../constants/Dimensions";
 import db from "../firebase/config";
-import { SearchBar } from "react-native-elements";
-import * as Animated from "react-native-animatable";
 import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements";
 import { COLORS, FONTS, SIZES } from "../constants";
+import { StatusBar } from "expo-status-bar";
+import moment from "moment";
+import { SearchBar } from "react-native-elements";
+import * as Animated from "react-native-animatable";
 
-export default class ProductList extends React.Component {
+export default class ProductList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       productList: [],
       filterProductList: [],
-      currentDate: `${moment().format("YYYY")}-${moment().format(
-        "MM"
-      )}-${moment().format("DD")}`,
-      search: "",
-      showModal: false,
+      productDetails: [],
+      showEditModal: false,
       product_name: "",
       cost: "",
       quantity: "",
       doc_id: "",
-      modalVisible: false,
-      quantityModalVisible: false,
-      QuantityCount: 0,
-      OriginalQuantityCount: 0,
+      email: firebase.auth().currentUser.email,
     };
     this.productRef = null;
     this.productName = React.createRef();
@@ -56,14 +53,10 @@ export default class ProductList extends React.Component {
   }
 
   getProductList = () => {
-    var email = firebase.auth().currentUser.email;
-    var currentDate = moment().subtract(0, "days").format("YYYY-MM-DD");
-    var today = currentDate.toString();
-
+    const { email } = this.state;
     this.productRef = db
       .collection("products")
       .where("user_id", "==", email)
-      // .where("quantity", ">", 0)
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) => {
         var DATA = [];
@@ -130,19 +123,153 @@ export default class ProductList extends React.Component {
       quantity: this.state.quantity,
     });
     this.setState({
-      total_cost: "",
+      cost: "",
       product_name: "",
       quantity: "",
       doc_id: "",
     });
   };
 
+  renderButton = () => {
+    const item = this.state.productDetails;
+    return (
+      <View>
+        {/* View */}
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={["#73f5be", "#02f58f", "#73f5be"]}
+          style={{
+            backgroundColor: "#4dccc6",
+            height: 60,
+            borderRadius: SIZES.radius,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: windowWidth / 1.2,
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+            onPress={() => {
+              this.props.navigation.navigate("ProductInfo", {
+                name: item.product_name,
+                exp_date: item.exp_date,
+                color: item.product_color,
+                id: item.product_id,
+                cost: item.total_cost,
+                quantity: item.quantity,
+              });
+              this.setState({
+                productDetails: [],
+              });
+              this.RBSheet.close();
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h2 }}>View</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+        {/* Delete */}
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={["#73f5be", "#02f58f", "#73f5be"]}
+          style={{
+            backgroundColor: "#4dccc6",
+            height: 60,
+            borderRadius: SIZES.radius,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: windowWidth / 1.2,
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+            onPress={() => {
+              this.deleteProduct(item.product_id);
+              this.setState({
+                productDetails: [],
+              });
+              this.RBSheet.close();
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h2 }}>Delete</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+        {/* Sell */}
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={["#73f5be", "#02f58f", "#73f5be"]}
+          style={{
+            backgroundColor: "#4dccc6",
+            height: 60,
+            borderRadius: SIZES.radius,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: windowWidth / 1.2,
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+            onPress={() => {
+              this.RBSheet.close();
+              this.props.navigation.navigate("MarkAsSold", { item: item });
+            }}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h2 }}>Sell</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+        {/* Cancel */}
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          colors={["#73f5be", "#02f58f", "#73f5be"]}
+          style={{
+            backgroundColor: "#4dccc6",
+            height: 60,
+            borderRadius: SIZES.radius,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: windowWidth / 1.2,
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+            onPress={() => this.RBSheet.close()}
+          >
+            <Text style={{ color: COLORS.white, ...FONTS.h2 }}>Cancel</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+      </View>
+    );
+  };
+
   showEditModal = (item) => {
     return (
       <Modal
-        // animationType="slide"
+        animationType="slide"
         transparent={true}
-        visible={this.state.showModal}
+        visible={this.state.showEditModal}
       >
         <View
           style={[
@@ -175,7 +302,15 @@ export default class ProductList extends React.Component {
                       Product Name
                     </Text>
                     <Icon
-                      onPress={() => this.setState({ showModal: false })}
+                      onPress={() =>
+                        this.setState({
+                          showEditModal: false,
+                          product_name: "",
+                          cost: "",
+                          quantity: "",
+                          doc_id: "",
+                        })
+                      }
                       type="feather"
                       name="x"
                       size={30}
@@ -286,7 +421,11 @@ export default class ProductList extends React.Component {
                     onPress={() => {
                       this.updateProduct(item.doc_id);
                       this.setState({
-                        showModal: false,
+                        showEditModal: false,
+                        product_name: "",
+                        cost: "",
+                        quantity: "",
+                        doc_id: "",
                       });
                       {
                         Platform.OS === "ios"
@@ -323,375 +462,6 @@ export default class ProductList extends React.Component {
     );
   };
 
-  showAlertModal = (item) => {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.modalVisible}
-        >
-          <TouchableWithoutFeedback
-            onPress={() => this.setState({ modalVisible: false })}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalSubContainer}>
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.navigate("ProductInfo", {
-                        name: item.product_name,
-                        exp_date: item.exp_date,
-                        color: item.product_color,
-                        id: item.product_id,
-                        cost: item.total_cost,
-                        quantity: item.quantity,
-                      });
-                      this.setState({
-                        modalVisible: false,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 2,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightpurple,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon type="feather" name="eye" color="#6B3CE9" size={25} />
-                    <Text
-                      style={{
-                        color: "#6B3CE9",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      View
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.deleteProduct(item.product_id);
-                      this.setState({
-                        modalVisible: false,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 2,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightRed,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon
-                      type="feather"
-                      name="trash-2"
-                      color="#FF4134"
-                      size={25}
-                    />
-                    <Text
-                      style={{
-                        color: "#FF4134",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Delete
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        modalVisible: false,
-                        quantityModalVisible: true,
-                      });
-                      this.setState({
-                        OriginalQuantityCount: item.quantity,
-                        QuantityCount: item.quantity,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 2,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightGreen,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon
-                      type="feather"
-                      name="trending-up"
-                      color="#66D59A"
-                      size={25}
-                    />
-                    <Text
-                      style={{
-                        color: "#66D59A",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Sell
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        modalVisible: false,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 2,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightyellow,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon type="feather" name="x" color="#FFC664" size={25} />
-                    <Text
-                      style={{
-                        color: "#FFC664",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Cancle
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      </SafeAreaView>
-    );
-  };
-
-  showSoldInput = (item) => {
-    var fixedQuantityString = item.quantity;
-    var fixedQuantityInteger = parseInt(fixedQuantityString);
-    const { QuantityCount } = this.state;
-    var quantity = parseInt(QuantityCount);
-
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.quantityModalVisible}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalSubContainer}>
-                <View
-                  style={{
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    height: 80,
-                    width: windowWidth / 1.8,
-                    marginTop: 40,
-                  }}
-                >
-                  {quantity === 0 ? null : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        quantity = quantity - 1;
-                        this.setState({
-                          QuantityCount: quantity,
-                        });
-                      }}
-                      style={[
-                        styles.iconContainer,
-                        { backgroundColor: COLORS.lime },
-                      ]}
-                    >
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontSize: 60,
-                          marginTop: -10,
-                          textAlign: "center",
-                        }}
-                      >
-                        -
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  <Text
-                    style={{
-                      color: "#000",
-                      fontSize: RFValue(50),
-                      marginTop: -10,
-                    }}
-                  >
-                    {quantity}
-                  </Text>
-
-                  {quantity === fixedQuantityInteger ? null : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        quantity = quantity + 1;
-                        this.setState({
-                          QuantityCount: quantity,
-                        });
-                      }}
-                      style={[
-                        styles.iconContainer,
-                        { backgroundColor: COLORS.lime },
-                      ]}
-                    >
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontSize: 40,
-                          marginTop: -5,
-                        }}
-                      >
-                        +
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        quantityModalVisible: false,
-                      });
-                      this.markAsSold(item, this.state.QuantityCount);
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 1.65,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightGreen,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon
-                      type="feather"
-                      name="trending-up"
-                      color="#66D59A"
-                      size={25}
-                    />
-                    <Text
-                      style={{
-                        color: "#66D59A",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Mark As Sold
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        quantityModalVisible: false,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 1.65,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightyellow,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon type="feather" name="x" color="#FFC664" size={25} />
-                    <Text
-                      style={{
-                        color: "#FFC664",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Cancle
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
-  };
-
-  markAsSold = (item, quantity) => {
-    var Orginialquantity = parseInt(this.state.OriginalQuantityCount);
-    var SoldUpdatedQuantity = parseInt(quantity);
-
-    db.collection("sold").add({
-      product_name: item.product_name,
-      quantity: SoldUpdatedQuantity,
-      total_cost: item.total_cost,
-      exp_date: item.exp_date,
-      product_id: item.product_id,
-      user_id: item.user_id,
-      product_color: item.product_color,
-      date_added: item.date_added,
-      original_product_quantity: Orginialquantity - SoldUpdatedQuantity,
-      original_doc_id: item.doc_id,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // var restQuantity = parseInt(item.quantity);
-    db.collection("products")
-      .doc(item.doc_id)
-      .update({
-        quantity: Orginialquantity - SoldUpdatedQuantity,
-      });
-
-    this.setState({
-      OriginalQuantityCount: 0,
-    });
-  };
-
   componentWillUnmount() {
     this.productRef;
   }
@@ -701,7 +471,21 @@ export default class ProductList extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#eaeef7" />
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref;
+          }}
+          height={380}
+          openDuration={250}
+          customStyles={{
+            container: {
+              justifyContent: "center",
+              alignItems: "center",
+            },
+          }}
+        >
+          {this.renderButton()}
+        </RBSheet>
 
         {this.state.productList.length === 0 ? (
           <View
@@ -744,11 +528,10 @@ export default class ProductList extends React.Component {
                     return (
                       <View styles={styles.container}>
                         {this.showEditModal(item)}
-                        {this.showAlertModal(item)}
-                        {this.showSoldInput(item)}
                         <TouchableOpacity
                           onPress={() => {
-                            this.setState({ modalVisible: true });
+                            this.RBSheet.open();
+                            this.setState({ productDetails: item });
                           }}
                           key={i}
                           style={styles.productListContent}
@@ -821,7 +604,7 @@ export default class ProductList extends React.Component {
                               style={{ marginRight: 12, marginTop: 10 }}
                               onPress={() => {
                                 this.setState({
-                                  showModal: true,
+                                  showEditModal: true,
                                   product_name: item.product_name,
                                   cost: item.total_cost,
                                   quantity: item.quantity,

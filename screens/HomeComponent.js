@@ -402,7 +402,7 @@ export default class HomeComponent extends Component {
         snapshot.docs.map((doc) => {
           var list = doc.data();
           list["doc_id"] = doc.id;
-          DATA.push(list.quantity);
+          DATA.push(list.sold_quantity);
         });
         this.soldConverter(DATA);
       });
@@ -427,6 +427,7 @@ export default class HomeComponent extends Component {
     var finalQuantity =
       otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
     this.setState({ soldProducts: finalQuantity });
+    console.log(QUANTITY);
   };
 
   getExpiredProductList = () => {

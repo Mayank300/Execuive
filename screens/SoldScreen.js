@@ -27,21 +27,9 @@ export default class SoldScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sellerEmail: "",
-      sellerName: "",
-      sellerCountryCode: "",
-      sellerNumber: "",
       color: "",
       soldProducts: [],
-      doc_id: "",
-      QuantityCount: 0,
-      quantityModalVisible: false,
-      originalProductQuantity: 0,
-      prevCount: 0,
     };
-    this.emailRef = createRef();
-    this.codeRef = createRef();
-    this.numberRef = createRef();
     this.soldProductsRef = null;
   }
 
@@ -70,225 +58,6 @@ export default class SoldScreen extends Component {
   componentWillUnmount() {
     this.soldProductsRef;
   }
-
-  updateSoldProducts = (id, quantity, originalDocId) => {
-    db.collection("sold")
-      .doc(id)
-      .update({
-        quantity: this.state.prevCount + quantity,
-        original_product_quantity:
-          this.state.originalProductQuantity - quantity,
-      });
-    db.collection("products")
-      .doc(originalDocId)
-      .update({
-        quantity: this.state.originalProductQuantity - quantity,
-      });
-  };
-
-  deleteSoldProducts = (id) => {
-    var deleteProduct = db.collection("sold").where("product_id", "==", id);
-    deleteProduct.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        doc.ref.delete();
-      });
-    });
-  };
-
-  showSoldInput = (item) => {
-    var fixedQuantityString = item.quantity;
-    var fixedQuantityInteger = parseInt(fixedQuantityString);
-    const { QuantityCount, originalProductQuantity } = this.state;
-    var quantity = parseInt(QuantityCount);
-
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.state.quantityModalVisible}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalSubContainer}>
-                <View
-                  style={{
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    height: 80,
-                    width: windowWidth / 1.8,
-                    marginTop: 40,
-                  }}
-                >
-                  {quantity === 0 ? null : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        quantity = quantity - 1;
-                        this.setState({
-                          QuantityCount: quantity,
-                        });
-                      }}
-                      style={[
-                        styles.iconContainer,
-                        { backgroundColor: COLORS.lime },
-                      ]}
-                    >
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontSize: 60,
-                          marginTop: -10,
-                          textAlign: "center",
-                        }}
-                      >
-                        -
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  <Text
-                    style={{
-                      color: "#000",
-                      fontSize: RFValue(50),
-                      marginTop: -10,
-                    }}
-                  >
-                    {quantity}
-                  </Text>
-
-                  {quantity >= originalProductQuantity ? null : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        quantity = quantity + 1;
-                        this.setState({
-                          QuantityCount: quantity,
-                        });
-                      }}
-                      style={[
-                        styles.iconContainer,
-                        { backgroundColor: COLORS.lime },
-                      ]}
-                    >
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontSize: 40,
-                          marginTop: -5,
-                        }}
-                      >
-                        +
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        quantityModalVisible: false,
-                      });
-                      this.updateSoldProducts(
-                        item.doc_id,
-                        quantity,
-                        item.original_doc_id
-                      );
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 1.65,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightGreen,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon
-                      type="feather"
-                      name="trending-up"
-                      color="#66D59A"
-                      size={25}
-                    />
-                    <Text
-                      style={{
-                        color: "#66D59A",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Update
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.deleteSoldProducts(item.product_id);
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 1.65,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightRed,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon type="feather" name="x" color="#FF4134" size={25} />
-                    <Text
-                      style={{
-                        color: "#FF4134",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Delete
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        quantityModalVisible: false,
-                      });
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginHorizontal: 20,
-                      marginTop: 30,
-                      width: windowWidth / 1.65,
-                      height: 60,
-                      borderRadius: 20,
-                      backgroundColor: COLORS.lightyellow,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Icon type="feather" name="x" color="#FFC664" size={25} />
-                    <Text
-                      style={{
-                        color: "#FFC664",
-                        fontSize: RFValue(25),
-                        fontWeight: "bold",
-                        marginLeft: 10,
-                      }}
-                    >
-                      Cancle
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
-  };
 
   keyExtractor = (item, index) => index.toString();
 
@@ -330,17 +99,15 @@ export default class SoldScreen extends Component {
             renderItem={({ item, i }) => {
               return (
                 <View styles={styles.container}>
-                  {this.showSoldInput(item)}
-
                   <TouchableOpacity
                     onPress={() => {
-                      this.setState({
-                        quantityModalVisible: true,
-                      });
-                      this.setState({
-                        QuantityCount: item.original_product_quantity,
-                        originalProductQuantity: item.original_product_quantity,
-                        prevCount: item.quantity,
+                      this.props.navigation.navigate("SoldProductInfo", {
+                        name: item.parent_product_name,
+                        exp_date: item.parent_exp_date,
+                        color: item.parent_product_color,
+                        id: item.parent_product_id,
+                        cost: item.sold_cost,
+                        quantity: item.sold_quantity,
                       });
                     }}
                     key={i}
@@ -363,7 +130,7 @@ export default class SoldScreen extends Component {
                             height: 12,
                             width: 12,
                             borderRadius: 6,
-                            backgroundColor: `rgb(${item.product_color})`,
+                            backgroundColor: `rgb(${item.parent_product_color})`,
                             marginRight: 8,
                           }}
                         />
@@ -376,7 +143,7 @@ export default class SoldScreen extends Component {
                           }}
                           numberOfLines={1}
                         >
-                          {item.product_name}
+                          {item.parent_product_name}
                         </Text>
                       </View>
                       <View>
@@ -394,7 +161,7 @@ export default class SoldScreen extends Component {
                             }}
                             numberOfLines={1}
                           >
-                            ....
+                            Total Cost : {item.sold_cost}
                           </Text>
                         </View>
                       </View>
@@ -405,7 +172,7 @@ export default class SoldScreen extends Component {
                         style={{
                           height: 80,
                           width: 5,
-                          backgroundColor: `rgb(${item.product_color})`,
+                          backgroundColor: `rgb(${item.parent_product_color})`,
                           borderRadius: 5,
                           marginHorizontal: 10,
                         }}

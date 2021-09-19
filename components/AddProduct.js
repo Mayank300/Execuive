@@ -61,7 +61,9 @@ const AddProduct = ({ navigation }) => {
     var dateAdded = moment().format("YYYY-MM-DD");
     db.collection("products").add({
       product_name: productName,
+      original_quantity: quantity,
       quantity: quantity,
+      original_total_cost: totalCost,
       total_cost: totalCost,
       exp_date: currentDay,
       // product_id: productUniqueId,
