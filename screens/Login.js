@@ -105,7 +105,6 @@ const Login = ({ navigation }) => {
   };
 
   const onSignIn = (googleUser) => {
-    console.log("Google Auth Response", googleUser);
     const unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
       unsubscribe();
       if (!isUserEqual(googleUser, firebaseUser)) {
@@ -117,7 +116,6 @@ const Login = ({ navigation }) => {
           .auth()
           .signInWithCredential(credential)
           .then((result) => {
-            console.log(result);
             try {
               db.collection("users").add({
                 user_name: result.additionalUserInfo.profile.name,

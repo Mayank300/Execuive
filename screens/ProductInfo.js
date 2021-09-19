@@ -28,8 +28,6 @@ export default class ProductInfo extends Component {
     const { name, exp_date, color, id, cost, quantity } =
       this.props.route.params;
 
-    console.log(quantity);
-
     return (
       <View style={[styles.container, { backgroundColor: `rgb(${color})` }]}>
         <ScrollView>

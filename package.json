@@ -55,7 +55,7 @@
     "react-native-mail-app-launcher": "^1.1.5",
     "react-native-paper": "^4.9.2",
     "react-native-phone-call": "^1.0.9",
-    "react-native-reanimated": "^2.2.0",
+    "react-native-reanimated": "^2.2.2",
     "react-native-responsive-fontsize": "^0.5.0",
     "react-native-restart": "^0.0.22",
     "react-native-root-siblings": "^4.1.1",
@@ -69,6 +69,7 @@
     "react-native-tiny-toast": "^1.0.7",
     "react-native-web": "~0.13.12",
     "react-native-webview": "11.6.2",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "yarn": "^1.22.11"
   },
   "devDependencies": {

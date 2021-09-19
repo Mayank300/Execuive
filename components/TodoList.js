@@ -16,7 +16,6 @@ export default class TodoList extends React.Component {
     const list = this.props.list;
     const completedCount = list.todos.filter((todo) => todo.completed).length;
     const remaningCount = list.todos.length - completedCount;
-    console.log();
     return (
       <View>
         <Modal

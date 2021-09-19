@@ -79,12 +79,10 @@ const ForgotPassword = ({ navigation }) => {
   }, []);
 
   const sendPasswordReset = (email) => {
-    console.log(email);
     firebase
       .auth()
       .sendPasswordResetEmail(email)
       .then(() => {
-        console.log("2");
         setUser_email("");
         navigation.replace("Login");
         return alert("Check registered email and change password ");

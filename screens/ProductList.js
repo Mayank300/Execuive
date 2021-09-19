@@ -23,8 +23,6 @@ import * as Animated from "react-native-animatable";
 import firebase from "firebase";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Icon } from "react-native-elements";
-
-import * as Print from "expo-print";
 import { COLORS, FONTS, SIZES } from "../constants";
 
 export default class ProductList extends React.Component {
@@ -61,8 +59,6 @@ export default class ProductList extends React.Component {
     var email = firebase.auth().currentUser.email;
     var currentDate = moment().subtract(0, "days").format("YYYY-MM-DD");
     var today = currentDate.toString();
-
-    console.log(today);
 
     this.productRef = db
       .collection("products")
@@ -507,9 +503,8 @@ export default class ProductList extends React.Component {
     var fixedQuantityString = item.quantity;
     var fixedQuantityInteger = parseInt(fixedQuantityString);
     const { QuantityCount } = this.state;
-
     var quantity = parseInt(QuantityCount);
-    console.log(quantity);
+
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <Modal
@@ -670,8 +665,6 @@ export default class ProductList extends React.Component {
   markAsSold = (item, quantity) => {
     var Orginialquantity = parseInt(this.state.OriginalQuantityCount);
     var SoldUpdatedQuantity = parseInt(quantity);
-    console.log(Orginialquantity);
-    console.log(SoldUpdatedQuantity);
 
     db.collection("sold").add({
       product_name: item.product_name,

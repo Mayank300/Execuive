@@ -97,11 +97,11 @@ export default class HomeComponent extends Component {
         var date = moment("2013-03-24");
         var now = moment();
 
-        if (now > date) {
-          console.log("past");
-        } else {
-          console.log("future");
-        }
+        // if (now > date) {
+        //   console.log("past");
+        // } else {
+        //   console.log("future");
+        // }
 
         // compare dates
 

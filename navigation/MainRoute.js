@@ -18,19 +18,18 @@ import {
   MyActivities,
   TodoScreen,
   SoldScreen,
-  GoogleSignInForm,
-} from "./screens";
-import AdScreen from "./AdScreen";
+} from "../screens";
+import AdScreen from "../Ad/AdScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import Tabs from "./navigation/tabs";
-import AmazonSearch from "./search/AmazonSearch";
-import GoogleSearch from "./search/GoogleSearch";
+import Tabs from "./tabs";
+import AmazonSearch from "../search/AmazonSearch";
+import GoogleSearch from "../search/GoogleSearch";
 import NetInfo from "@react-native-community/netinfo";
-import ScanProduct from "./components/ScanProduct";
-import ScanProductId from "./components/ScanProductId";
-import AddProduct from "./components/AddProduct";
+import ScanProduct from "../components/ScanProduct";
+import ScanProductId from "../components/ScanProductId";
+import AddProduct from "../components/AddProduct";
 
 const theme = {
   ...DefaultTheme,
@@ -58,9 +57,9 @@ const MainRoute = ({ navigation }) => {
   }, []);
 
   const [loaded] = useFonts({
-    "Roboto-Black": require("./assets/fonts/Roboto-Black.ttf"),
-    "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
-    "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Black": require("../assets/fonts/Roboto-Black.ttf"),
+    "Roboto-Bold": require("../assets/fonts/Roboto-Bold.ttf"),
+    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
   });
 
   if (!loaded) {
@@ -96,7 +95,6 @@ const MainRoute = ({ navigation }) => {
           <Stack.Screen name="ScanProductId" component={ScanProductId} />
           <Stack.Screen name="SoldScreen" component={SoldScreen} />
           <Stack.Screen name="AddProduct" component={AddProduct} />
-          <Stack.Screen name="GoogleSignInForm" component={GoogleSignInForm} />
           <Stack.Screen
             name="ExpiredProductScreen"
             component={ExpiredProductScreen}
