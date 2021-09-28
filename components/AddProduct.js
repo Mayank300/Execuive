@@ -66,7 +66,6 @@ const AddProduct = ({ navigation }) => {
       original_total_cost: totalCost,
       total_cost: totalCost,
       exp_date: currentDay,
-      // product_id: productUniqueId,
       product_id: Math.random().toString(36).substring(7),
       user_id: userId,
       product_color: color,
@@ -307,56 +306,6 @@ const AddProduct = ({ navigation }) => {
               placeholderTextColor={COLORS.black}
               selectionColor={COLORS.black}
             />
-          </View>
-        </View>
-
-        {/* bar code */}
-        <View
-          style={{
-            marginTop: SIZES.padding - 20,
-            marginHorizontal: SIZES.padding * 3,
-          }}
-        >
-          <View style={{ marginTop: SIZES.padding * 3 }}>
-            <Text style={{ color: COLORS.black, ...FONTS.body3 }}>
-              Product Id (UNIQUE)
-            </Text>
-            <View style={{ position: "absolute", top: 35, left: 5 }}>
-              <Icon type="feather" name="grid" size={28} color={COLORS.black} />
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: windowWidth / 1.4,
-                marginLeft: 50,
-              }}
-            >
-              <TextInput
-                value={productUniqueId}
-                style={[styles.textInput, { paddingLeft: 0 }]}
-                placeholder="Scan The Bar Code"
-                placeholderTextColor={COLORS.black}
-                selectionColor={COLORS.black}
-                editable={false}
-              />
-              <TouchableOpacity
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: COLORS.primary,
-                  height: 30,
-                  width: 80,
-                  borderRadius: 14,
-                }}
-                onPress={() => {
-                  navigation.navigate("ScanProductId");
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>SCAN</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 

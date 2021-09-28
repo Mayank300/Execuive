@@ -27,6 +27,7 @@ import { SocialIcon } from "react-native-elements";
 import { windowWidth } from "../components/Dimensions";
 import { RFValue } from "react-native-responsive-fontsize";
 import * as Notification from "expo-notifications";
+import * as Permission from "expo-permissions";
 
 Notification.setNotificationHandler({
   handleNotification: async () => {
@@ -45,6 +46,21 @@ const Login = ({ navigation }) => {
   const [googleSubmitting, setGoogleSubmitting] = React.useState(false);
 
   const passwordRef = useRef(null);
+
+  React.useEffect(() => {
+    Permission.getAsync(Permission.NOTIFICATIONS)
+      .then((response) => {
+        if (response.status !== "granted") {
+          return Permission.askAsync(Permission.NOTIFICATIONS);
+        }
+        return response;
+      })
+      .then((response) => {
+        if (response.status !== "granted") {
+          return;
+        }
+      });
+  }, []);
 
   const loginNotification = (title) => {
     Notification.scheduleNotificationAsync({
@@ -121,7 +137,7 @@ const Login = ({ navigation }) => {
                 user_name: result.additionalUserInfo.profile.name,
                 email_id: result.user.email,
                 contact: "",
-                selected_area: "",
+                selected_area: [],
                 google_login: true,
               });
             } catch (error) {

@@ -80,6 +80,7 @@ export class MarkAsSold extends Component {
 
   render() {
     const { item } = this.state;
+    console.log(item);
     return (
       <View
         style={[
@@ -123,6 +124,30 @@ export class MarkAsSold extends Component {
                       { borderColor: `rgb(${item.product_color})` },
                     ]}
                     value={item.product_name}
+                  />
+                </View>
+
+                <View style={styles.notesContent} />
+
+                <View style={styles.ModalHead}>
+                  <Text
+                    style={{
+                      color: "#000",
+                      fontSize: 16,
+                      fontWeight: "600",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Product Quantity
+                  </Text>
+                  <TextInput
+                    editable={false}
+                    selectTextOnFocus={false}
+                    style={[
+                      styles.title,
+                      { borderColor: `rgb(${item.product_color})` },
+                    ]}
+                    value={item.original_quantity}
                   />
                 </View>
 

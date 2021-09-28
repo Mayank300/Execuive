@@ -15,16 +15,16 @@ import db from "../firebase/config";
 import firebase from "firebase";
 
 export default class SoldProductInfo extends Component {
-  deleteProduct = (id) => {
-    var delete_task = db
-      .collection("sold")
-      .where("parent_product_id", "==", id);
-    delete_task.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        doc.ref.delete();
-      });
-    });
-  };
+  // deleteProduct = (id) => {
+  //   var delete_task = db
+  //     .collection("sold")
+  //     .where("parent_product_id", "==", id);
+  //   delete_task.get().then(function (querySnapshot) {
+  //     querySnapshot.forEach(function (doc) {
+  //       doc.ref.delete();
+  //     });
+  //   });
+  // };
 
   render() {
     const { name, exp_date, color, id, cost, quantity } =
@@ -127,7 +127,7 @@ export default class SoldProductInfo extends Component {
                   />
                 </View>
 
-                <View style={styles.modalFoot}>
+                {/* <View style={styles.modalFoot}>
                   <TouchableOpacity
                     onPress={() => {
                       this.deleteProduct(id);
@@ -136,7 +136,7 @@ export default class SoldProductInfo extends Component {
                   >
                     <Icon type="feather" name="trash-2" size={35} />
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
                 {/*  */}
               </ScrollView>
